@@ -27,44 +27,40 @@ app.get('/api', isAuthenticated, (req, res) => {
 });
 
 
-app.get('/generations/:id', function (req, res) {
-    console.log('Came to reverse proxy')
-    let id = req.params.id;
-    let remoteUrl = `https://cdn.stablediffusionapi.com/generations/${id}`;
-
-    axios({
-        method: 'get',
-        url: remoteUrl,
-        responseType: 'stream'
-    })
-        .then(function (response) {
-            response.data.pipe(res);
-        })
-        .catch(function (error) {
-            console.log('Came to catch block of reverse proxy')
-            res.status(404).send("No image yet yo.");
+app.get('/generations/:id', async function (req, res) {
+    try {
+        let id = req.params.id;
+        let remoteUrl = `https://cdn.stablediffusionapi.com/generations/${id}`;
+        const response = await axios({
+            method: 'get',
+            url: remoteUrl,
+            responseType: 'stream'
         });
+        response.data.pipe(res);
+    } catch (error) {
+        console.log('Came to catch block of reverse proxy');
+        res.status(404).send("No image yet yo.");
+    }
 });
 
-app.get('/api/v1/status/:jobid', isAuthenticated, async (req, res) => {
+
+app.post('/api/v1/status/:jobid', isAuthenticated, async (req, res) => {
     try {
         const jobId = req.params.jobid;
+        const imgId = req.body.imgId;
         const response = await axios.post(`https://stablediffusionapi.com/api/v3/dreambooth/fetch/${jobId}`, {
             "key": process.env.sd_apiKey
         });
         const status = response.data.status;
-        res.status(200).send({ status });
-        if (status === 'success') {
-            const imgIds = response.data.output.map(url => {
-                const splitUrl = url.split('/');
-                const imgId = splitUrl[splitUrl.length - 1].replace('.png', '');
-                return imgId;
-            });
-            console.log('imgIds', imgIds);
+        if (status !== 'processing') {
+            console.log('Came inside the processing block')
             //update the status in the db
-            const updateStatus = await generationsModel.updateMany({ imgId: { $in: imgIds } }, { isImgGenerated: true, status: 'success' });
+            const updateStatus = await generationsModel.updateOne({ imgId: imgId, email: req.email }, { status: status });
         }
+        res.status(200).send({ status });
     } catch (err) {
+        console.log('Came here!')
+        console.log(err);
         res.status(500).send("An error occurred while fetching the status.");
     }
 });

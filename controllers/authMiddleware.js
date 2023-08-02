@@ -1,13 +1,11 @@
 const auth = require("../firebase");
 
 const isAuthenticated = async (req, res, next) => {
-    const idToken = req.headers.authorization;
-
-    if (!idToken) {
-        return res.status(401).json({ message: "Unauthenticated" });
-    }
-
     try {
+        const idToken = req.headers.authorization;
+        if (!idToken) {
+            return res.status(401).json({ message: "Unauthenticated" });
+        }
         const decodedToken = await auth.verifyIdToken(idToken);
         req.email = decodedToken.email;
         req.name = decodedToken.name;

@@ -1,10 +1,10 @@
 const Generations = require('../models/generationsModel');
 
 const deleteImg = async (req, res) => {
-    const { email } = req;
-    const imgId = req.body.imgId;
-
     try {
+        const { email } = req;
+        const imgId = req.body.imgId;
+
         const image = await Generations.findOne({ imgId, email });
 
         if (!image) {

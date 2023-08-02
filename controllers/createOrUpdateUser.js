@@ -1,8 +1,9 @@
 const User = require('../models/usersModel');
 
 const createOrUpdateUser = async (req, res) => {
-    const { email, name, profile_pic, email_verified } = req;
+
     try {
+        const { email, name, profile_pic, email_verified } = req;
         const user = await User.findOne({ email });
         if (user) {
             return res.status(200).json({ message: 'Success' });
