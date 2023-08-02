@@ -18,10 +18,10 @@ const getImages = async (req, res) => {
 
         // Retrieve the images from the database
         const images = await Generations.find(query)
-            .sort({ createdAt: -1 })
+            .sort({ createdAt: -1, imgId: -1 })
             .skip(skip)
             .limit(limit)
-            .select('imgId prompt bookmark upscaled parameters.width parameters.height createdAt');
+            .select('imgId jobId prompt status bookmark upscaled parameters.width parameters.height createdAt');
 
         // Get the total count of images in the database for the given email (and bookmark if provided)
         const totalCount = await Generations.countDocuments(query);

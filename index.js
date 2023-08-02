@@ -5,6 +5,8 @@ const cors = require('cors');
 const requestIp = require('request-ip');
 const db = require('./db');
 
+const generationsModel = require('./models/generationsModel');
+
 //controllers
 const isAuthenticated = require('./controllers/authMiddleware');
 const verifyCredits = require('./controllers/verifyCredits');
@@ -39,10 +41,34 @@ app.get('/generations/:id', function (req, res) {
             response.data.pipe(res);
         })
         .catch(function (error) {
-            console.error(error);
-            res.status(500).send("An error occurred while retrieving the image.");
+            console.log('Came to catch block of reverse proxy')
+            res.status(404).send("No image yet yo.");
         });
 });
+
+app.get('/api/v1/status/:jobid', isAuthenticated, async (req, res) => {
+    try {
+        const jobId = req.params.jobid;
+        const response = await axios.post(`https://stablediffusionapi.com/api/v3/dreambooth/fetch/${jobId}`, {
+            "key": process.env.sd_apiKey
+        });
+        const status = response.data.status;
+        res.status(200).send({ status });
+        if (status === 'success') {
+            const imgIds = response.data.output.map(url => {
+                const splitUrl = url.split('/');
+                const imgId = splitUrl[splitUrl.length - 1].replace('.png', '');
+                return imgId;
+            });
+            console.log('imgIds', imgIds);
+            //update the status in the db
+            const updateStatus = await generationsModel.updateMany({ imgId: { $in: imgIds } }, { isImgGenerated: true, status: 'success' });
+        }
+    } catch (err) {
+        res.status(500).send("An error occurred while fetching the status.");
+    }
+});
+
 
 app.post('/api/v1/generateImage', isAuthenticated, verifyCredits, generateImage);
 

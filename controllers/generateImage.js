@@ -49,7 +49,9 @@ const generateImage = async (req, res, next) => {
     try {
         const response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
         console.log(response.data);
-        const imgLinks = response.data.status === 'success' ? response.data.output : response.data.future_links;
+        const isImgGenerated = response.data.status === 'success' ? true : false;
+        const status = isImgGenerated ? 'success' : 'processing';
+        const imgLinks = isImgGenerated ? response.data.output : response.data.future_links;
         const baseImgId = response.data.meta.file_prefix.replace('.png', '');
 
         const generations = imgLinks.map((imgLink, i) => {
@@ -59,6 +61,9 @@ const generateImage = async (req, res, next) => {
                 imgLink: imgLink,
                 prompt: instructions,
                 model: data.model_id,
+                jobId: response.data.id,
+                isImgGenerated: isImgGenerated,
+                status: status,
                 parameters: {
                     negative_prompt: data.negative_prompt,
                     width: data.width,
@@ -78,7 +83,7 @@ const generateImage = async (req, res, next) => {
 
         await Generation.insertMany(generations);
 
-        const finalData = { status: response.data.status, eta: response.data.eta || null, imgId: baseImgId }
+        const finalData = { status: status, eta: response.data.eta || null, imgId: baseImgId, jobId: response.data.id };
         console.log(finalData)
         res.send(finalData);
         //increase current_usage in the user model by 1

@@ -8,7 +8,13 @@ const generationsSchema = new Schema(
             type: String,
             unique: true,
         },
+        jobId: String,
         imgLink: String,
+        isImgGenerated: {
+            type: Boolean,
+            default: false,
+        },
+        status: String,
         prompt: String,
         model: String,
         bookmark: {
