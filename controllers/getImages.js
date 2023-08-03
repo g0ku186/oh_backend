@@ -39,5 +39,3 @@ const getImages = async (req, res) => {
 }
 
 module.exports = getImages;
-
-module.exports = getImages;

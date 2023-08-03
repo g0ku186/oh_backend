@@ -13,6 +13,7 @@ const verifyCredits = require('./controllers/verifyCredits');
 const generateImage = require('./controllers/generateImage');
 const createOrUpdateUser = require('./controllers/createOrUpdateUser');
 const getImages = require('./controllers/getImages');
+const getPublicImages = require('./controllers/getPublicImages');
 const bookmarkImg = require('./controllers/bookmarkImg');
 const deleteImg = require('./controllers/deleteImg');
 
@@ -75,6 +76,8 @@ app.post('/api/v1/image/bookmark', isAuthenticated, bookmarkImg);
 app.delete('/api/v1/image/delete', isAuthenticated, deleteImg);
 
 app.get('/api/v1/user/getImages', isAuthenticated, getImages);
+
+app.get('/api/v1/user/getPublicImages', getPublicImages);
 
 app.use((err, req, res, next) => {
     console.log('Came to error handler');
