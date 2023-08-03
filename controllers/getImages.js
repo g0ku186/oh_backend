@@ -7,13 +7,15 @@ const getImages = async (req, res) => {
         const limit = Number(req.query.limit) || 20; // defaults to 10
         const additionalSkip = Number(req.query.skip) || 0; // defaults to 0 (for new images
         const bookmark = req.query.bookmark === 'true'; // defaults to false
-
+        console.log('Bookmark is')
+        console.log(bookmark);
         const skip = (page - 1) * limit + additionalSkip;
 
         const query = { email: email };
 
         // If bookmark query parameter is provided, include it in the MongoDB query
-        if (req.query.bookmark) {
+        if (bookmark) {
+            console.log('Adding bookmark to query')
             query.bookmark = bookmark;
         }
 

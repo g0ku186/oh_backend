@@ -8,7 +8,7 @@ const generationsSchema = new Schema(
             type: String,
             unique: true,
         },
-        jobId: String,
+        jobId: Number,
         imgLink: String,
         isImgGenerated: {
             type: Boolean,

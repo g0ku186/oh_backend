@@ -60,8 +60,10 @@ const generateImage = async (req, res, next) => {
             negative_prompt = '(worst quality, low quality:1.4), monochrome, zombie, (interlocked fingers:1.2), multiple views, comic, sketch, animal ears, pointy ears',
             image_orientation = 'square',
             high_quality = false,
-            guidance_scale = 7.5
+            guidance_scale = 7.5,
+            seed = null,
         } = req.body;
+
 
         const { width, height } = generateImageDimensions(image_orientation, high_quality);
 
@@ -79,7 +81,7 @@ const generateImage = async (req, res, next) => {
             num_inference_steps: '20',
             enhance_prompt: 'no',
             scheduler: 'EulerAncestralDiscreteScheduler',
-            seed: null,
+            seed: seed,
             guidance_scale: guidance_scale,
             webhook: null,
             tomesd: 'yes',
@@ -92,6 +94,8 @@ const generateImage = async (req, res, next) => {
             embeddings_model: null,
             clip_skip: 2
         };
+
+        console.log(data);
         const response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
         console.log(response.data);
         const isImgGenerated = response.data.status === 'success' ? true : false;
@@ -104,24 +108,24 @@ const generateImage = async (req, res, next) => {
                 email: email,
                 imgId: i + '-' + baseImgId, // append the index to the baseImgId
                 imgLink: imgLink,
-                prompt: instructions,
-                model: data.model_id,
+                prompt: response.data.meta.prompt,
+                model: response.data.meta.model_id,
                 jobId: response.data.id,
                 isImgGenerated: isImgGenerated,
                 status: status,
                 parameters: {
-                    negative_prompt: data.negative_prompt,
-                    width: data.width,
-                    height: data.height,
-                    samples: data.samples,
-                    num_inference_steps: data.num_inference_steps,
-                    scheduler: data.scheduler,
-                    seed: data.seed,
-                    guidance_scale: data.guidance_scale,
-                    vae: data.vae,
-                    lora_model: data.lora_model,
-                    lora_strength: data.lora_strength,
-                    clip_skip: data.clip_skip
+                    negative_prompt: response.data.meta.negative_prompt,
+                    width: response.data.meta.W,
+                    height: response.data.meta.H,
+                    samples: response.data.meta.n_samples,
+                    num_inference_steps: response.data.meta.steps,
+                    scheduler: response.data.meta.scheduler,
+                    seed: response.data.meta.seed,
+                    guidance_scale: response.data.meta.guidance_scale,
+                    vae: response.data.meta.vae,
+                    lora_model: response.data.meta.lora,
+                    lora_strength: response.data.meta.lora_strength,
+                    clip_skip: response.data.meta.clip_skip
                 },
             };
         });
