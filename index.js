@@ -16,6 +16,7 @@ const getImages = require('./controllers/getImages');
 const getPublicImages = require('./controllers/getPublicImages');
 const bookmarkImg = require('./controllers/bookmarkImg');
 const deleteImg = require('./controllers/deleteImg');
+const getUserDetails = require('./controllers/getUserDetails');
 
 const app = express();
 
@@ -70,6 +71,8 @@ app.post('/api/v1/status/:jobid', isAuthenticated, async (req, res) => {
 app.post('/api/v1/generateImage', isAuthenticated, verifyCredits, generateImage);
 
 app.post('/api/v1/user/login', isAuthenticated, createOrUpdateUser);
+
+app.get('/api/v1/user/profile', isAuthenticated, getUserDetails);
 
 app.post('/api/v1/image/bookmark', isAuthenticated, bookmarkImg);
 

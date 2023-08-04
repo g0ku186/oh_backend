@@ -26,6 +26,14 @@ const usersSchema = new Schema(
             type: [Schema.Types.Mixed],
             default: [],
         },
+        subscribedDate: {
+            type: Date,
+            default: null,
+        },
+        renewalDate: {
+            type: Date,
+            default: null,
+        },
         utmDetails: Schema.Types.Mixed,
         referrer: String,
         ip: String,
