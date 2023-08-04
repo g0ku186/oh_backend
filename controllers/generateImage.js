@@ -51,7 +51,7 @@ const generateImageDimensions = (image_orientation, high_quality) => {
     return { width, height };
 };
 
-
+const defaultNegativePrompt = 'child, childlike, Below 20, kids,';
 
 const generateImage = async (req, res, next) => {
     try {
@@ -73,7 +73,7 @@ const generateImage = async (req, res, next) => {
             key: process.env.sd_apiKey,
             model_id: 'hassaku-hentai',
             prompt: instructions,
-            negative_prompt: negative_prompt,
+            negative_prompt: defaultNegativePrompt + ' ' + negative_prompt,
             width: width,
             height: height,
             samples: '2',
@@ -114,7 +114,7 @@ const generateImage = async (req, res, next) => {
                 isImgGenerated: isImgGenerated,
                 status: status,
                 parameters: {
-                    negative_prompt: response.data.meta.negative_prompt,
+                    negative_prompt: negative_prompt,
                     width: response.data.meta.W,
                     height: response.data.meta.H,
                     samples: response.data.meta.n_samples,
