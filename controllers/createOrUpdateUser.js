@@ -6,7 +6,12 @@ const createOrUpdateUser = async (req, res) => {
         const { email, name, profile_pic, email_verified } = req;
         const user = await User.findOne({ email });
         if (user) {
+            if (!user.email_verified) {
+                user.email_verified = email_verified;
+                await user.save();
+            }
             return res.status(200).json({ message: 'Success' });
+
         }
         const newUser = await User.create({
             email,
