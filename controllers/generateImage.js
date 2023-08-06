@@ -1,6 +1,7 @@
 const axios = require('axios');
 const User = require('../models/usersModel');
 const Generation = require('../models/generationsModel');
+const uploadToCF = require('./uploadToCF');
 const Ip = require('../models/ipsModel');
 // const modelConfig = [
 //     v1 : {
@@ -16,6 +17,23 @@ const Ip = require('../models/ipsModel');
 // DPM++ SDE Karras = DPMSolverMultistepScheduler
 // DPM++ 2M Karras = KDPM2DiscreteScheduler
 // DDIM = DDIMScheduler
+
+// const uploadToCF = async (url) => {
+//     try {
+//         const body = new FormData();
+//         body.append("url", url);
+//         const res = await axios.post(
+//             `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_accountId}/images/v1`, body,
+//             {
+//                 headers: { "Authorization": `Bearer ${process.env.CF_apiKey}` },
+//             }
+//         );
+//         return res.data;
+
+//     } catch (e) {
+//         console.log("ERROR:" + e);
+//     }
+// }
 const generateImageDimensions = (image_orientation, high_quality) => {
     let width, height;
 
@@ -71,7 +89,7 @@ const generateImage = async (req, res, next) => {
         console.log(instructions);
         const data = {
             key: process.env.sd_apiKey,
-            model_id: 'hassaku-hentai',
+            model_id: 'meina-hentai',
             prompt: instructions,
             negative_prompt: defaultNegativePrompt + ' ' + negative_prompt,
             width: width,
@@ -103,7 +121,20 @@ const generateImage = async (req, res, next) => {
         const imgLinks = isImgGenerated ? response.data.output : response.data.future_links;
         const baseImgId = response.data.meta.file_prefix.replace('.png', '');
 
-        const generations = imgLinks.map((imgLink, i) => {
+        const generationsPromises = imgLinks.map(async (imgLink, i) => {
+            let cf_uploaded = false;
+            let cf_id = null;
+            let cf_meta = {};
+            if (isImgGenerated) {
+                console.log('Uploading to CF')
+                console.log(imgLink);
+                const cfResponse = await uploadToCF(imgLink);
+                cf_uploaded = cfResponse.success;
+                cf_id = cfResponse.result.id;
+                cf_meta.errors = cfResponse.errors;
+                cf_meta.messages = cfResponse.messages;
+            }
+
             return {
                 email: email,
                 imgId: i + '-' + baseImgId, // append the index to the baseImgId
@@ -113,6 +144,9 @@ const generateImage = async (req, res, next) => {
                 jobId: response.data.id,
                 isImgGenerated: isImgGenerated,
                 status: status,
+                cf_uploaded: cf_uploaded,
+                cf_id: cf_id,
+                cf_meta: cf_meta,
                 parameters: {
                     negative_prompt: negative_prompt,
                     width: response.data.meta.W,
@@ -130,6 +164,7 @@ const generateImage = async (req, res, next) => {
             };
         });
 
+        const generations = await Promise.all(generationsPromises);
         await Generation.insertMany(generations);
 
         //const finalData = { status: status, eta: response.data.eta || null, imgId: baseImgId, jobId: response.data.id, parameters: { width: data.width, height: data.height } };
@@ -139,6 +174,7 @@ const generateImage = async (req, res, next) => {
                 status: generation.status,
                 eta: response.data.eta || null,
                 imgId: generation.imgId,
+                cf_id: generation.cf_id,
                 jobId: generation.jobId,
                 prompt: generation.prompt,
                 bookmark: false,
@@ -162,6 +198,7 @@ const generateImage = async (req, res, next) => {
             await Ip.findOneAndUpdate({ ip: ip }, { $inc: { current_usage: 1 } });
         }
     } catch (err) {
+        console.log(err);
         next(err);
     }
 };

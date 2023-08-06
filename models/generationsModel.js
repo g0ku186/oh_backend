@@ -26,6 +26,9 @@ const generationsSchema = new Schema(
             default: false,
         },
         parameters: Schema.Types.Mixed,
+        cf_uploaded: Boolean,
+        cf_id: String,
+        cf_meta: Schema.Types.Mixed,
 
     },
     { timestamps: true }

@@ -17,6 +17,7 @@ const getPublicImages = require('./controllers/getPublicImages');
 const bookmarkImg = require('./controllers/bookmarkImg');
 const deleteImg = require('./controllers/deleteImg');
 const getUserDetails = require('./controllers/getUserDetails');
+const getImageStatus = require('./controllers/getImageStatus');
 
 const app = express();
 
@@ -46,26 +47,7 @@ app.get('/generations/:id', async function (req, res) {
 });
 
 
-app.post('/api/v1/status/:jobid', isAuthenticated, async (req, res) => {
-    try {
-        const jobId = req.params.jobid;
-        const imgId = req.body.imgId;
-        const response = await axios.post(`https://stablediffusionapi.com/api/v3/dreambooth/fetch/${jobId}`, {
-            "key": process.env.sd_apiKey
-        });
-        const status = response.data.status;
-        if (status !== 'processing') {
-            console.log('Came inside the processing block')
-            //update the status in the db
-            const updateStatus = await generationsModel.updateOne({ imgId: imgId, email: req.email }, { status: status });
-        }
-        res.status(200).send({ status });
-    } catch (err) {
-        console.log('Came here!')
-        console.log(err);
-        res.status(500).send("An error occurred while fetching the status.");
-    }
-});
+app.post('/api/v1/status/:jobid', isAuthenticated, getImageStatus);
 
 
 app.post('/api/v1/generateImage', isAuthenticated, verifyCredits, generateImage);
