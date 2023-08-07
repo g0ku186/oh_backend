@@ -1,6 +1,7 @@
 const axios = require('axios');
 const uploadToCF = async (url) => {
     try {
+        console.log('Uploading to CF')
         const body = new FormData();
         body.append("url", url);
         const res = await axios.post(
@@ -12,7 +13,8 @@ const uploadToCF = async (url) => {
         return res.data;
 
     } catch (e) {
-        console.log("ERROR:" + e);
+        console.log("ERROR:");
+        console.log(e.response.data);
         throw e;
     }
 }

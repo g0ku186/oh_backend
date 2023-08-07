@@ -35,16 +35,16 @@ const getUpscaleImageStatus = async (req, res) => {
                 existingRecord.upscale_status = status;
                 existingRecord.save();
 
-                if (cfResponse.success) res.status(200).send({ upscale_status: existingRecord.upscale_status, upscale_cf_id: existingRecord.upscale_cf_id });
-                else res.status(200).send({ status: "failed" });
+                if (cfResponse.success) res.status(200).send({ upscale_status: existingRecord.upscale_status, upscale_cf_id: existingRecord.upscale_cf_id, upscaled: true });
+                else res.status(200).send({ upscale_status: "failed", upscale_cf_id: null, upscaled: false });
                 return;
             } else {
                 const updateStatus = await generationsModel.updateOne({ imgId: imgId, email: req.email }, { upscale_status: status });
-                res.status(200).send({ upscale_status: status });
+                res.status(200).send({ upscale_status: status, upscaled: false, upscale_cf_id: null });
                 return
             }
         }
-        res.status(200).send({ upscale_status: status });
+        res.status(200).send({ upscale_status: status, upscaled: false, upscale_cf_id: null });
     } catch (err) {
         console.log('Came here!')
         console.log(err);

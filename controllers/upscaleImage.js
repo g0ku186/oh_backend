@@ -34,14 +34,14 @@ const upscaleImage = async (req, res, next) => {
         console.log(response.data);
         existingRecord.upscale_jobId = response.data.id;
         existingRecord.upscaled = response.data.status === 'success' ? true : false;
-        existingRecord.upscale_status = upscaled ? 'success' : 'processing';
-        existingRecord.upscale_imgLink = upscaled ? response.data.output : ''; //check if it is future links for upscale
+        existingRecord.upscale_status = existingRecord.upscaled ? 'success' : 'processing';
+        existingRecord.upscale_imgLink = existingRecord.upscaled ? response.data.output : ''; //check if it is future links for upscale
 
         existingRecord.upscale_cf_uploaded = false;
         existingRecord.upscale_cf_id = null;
         existingRecord.upscale_cf_meta = {};
         if (existingRecord.upscaled) {
-            console.log('Uploading to CF')
+            console.log('Uploading to CF yo')
             console.log(existingRecord.upscale_imgLink);
             const cfResponse = await uploadToCF(existingRecord.upscale_imgLink);
             existingRecord.upscale_cf_uploaded = cfResponse.success;
@@ -67,7 +67,7 @@ const upscaleImage = async (req, res, next) => {
         console.log(finalData)
         res.send(finalData);
     } catch (err) {
-        console.log(err);
+        console.log(err.response.status);
         next(err);
     }
 };

@@ -58,7 +58,6 @@ const generateImageDimensions = (image_orientation, high_quality) => {
 
     // Adjust dimensions for high quality
     if (high_quality) {
-        upscale = "1";
         if (image_orientation === 'square') {
             width *= 2;
             height *= 2;
@@ -68,7 +67,7 @@ const generateImageDimensions = (image_orientation, high_quality) => {
         }
     }
 
-    return { width, height, upscale };
+    return { width, height };
 };
 
 const defaultNegativePrompt = 'child, childlike, Below 20, kids,';
@@ -82,6 +81,7 @@ const generateImage = async (req, res, next) => {
             high_quality = false,
             guidance_scale = 7.5,
             seed = null,
+            init_image = null,
         } = req.body;
 
 
@@ -107,7 +107,7 @@ const generateImage = async (req, res, next) => {
             tomesd: 'yes',
             multi_lingual: 'no',
             use_karras_sigmas: 'yes',
-            upscale: upscale,
+            upscale: 'no',
             vae: null,
             lora_model: null,
             lora_strength: null,
@@ -115,8 +115,16 @@ const generateImage = async (req, res, next) => {
             clip_skip: 2
         };
 
-        console.log(data);
-        const response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
+        let response;
+        if (init_image) {
+            data.init_image = init_image;
+            console.log(data);
+            console.log('Hitting remix endpoint')
+            response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
+        } else {
+            console.log(data);
+            response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
+        }
         console.log(response.data);
         const isImgGenerated = response.data.status === 'success' ? true : false;
         const status = isImgGenerated ? 'success' : 'processing';
@@ -151,6 +159,8 @@ const generateImage = async (req, res, next) => {
                 cf_meta: cf_meta,
                 parameters: {
                     negative_prompt: negative_prompt,
+                    image_orientation: image_orientation,
+                    high_quality: high_quality,
                     width: response.data.meta.W,
                     height: response.data.meta.H,
                     samples: response.data.meta.n_samples,
@@ -161,7 +171,8 @@ const generateImage = async (req, res, next) => {
                     vae: response.data.meta.vae,
                     lora_model: response.data.meta.lora,
                     lora_strength: response.data.meta.lora_strength,
-                    clip_skip: response.data.meta.clip_skip
+                    clip_skip: response.data.meta.clip_skip,
+                    init_image: response.data.meta.init_image,
                 },
             };
         });
@@ -184,6 +195,8 @@ const generateImage = async (req, res, next) => {
                 parameters: {
                     width: generation.parameters.width,
                     height: generation.parameters.height,
+                    image_orientation: generation.parameters.image_orientation,
+                    high_quality: generation.parameters.high_quality,
                     negative_prompt: generation.parameters.negative_prompt,
                     seed: generation.parameters.seed,
                     guidance_scale: generation.parameters.guidance_scale,
