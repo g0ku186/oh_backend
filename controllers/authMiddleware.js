@@ -11,10 +11,9 @@ const isAuthenticated = async (req, res, next) => {
         req.name = decodedToken.name;
         req.profile_pic = decodedToken.picture;
         req.email_verified = decodedToken.email_verified;
-        console.log("User verified: ", req.email);
         next();
     } catch (error) {
-        res.status(401).json({ message: "Unauthenticated" });
+        res.status(401).json({ message: "Unauthenticated. Please refresh the page and login." });
     }
 };
 

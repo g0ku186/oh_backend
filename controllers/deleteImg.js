@@ -17,16 +17,18 @@ const deleteImg = async (req, res) => {
             upscale_cf_id = image.upscale_cf_id;
         }
 
+        console.log('CF ID')
+        console.log(cf_id)
         console.log('Upscale ID')
         console.log(upscale_cf_id)
 
         await Generations.deleteOne({ imgId, email });
-        const deleteFromCFResponse = await deleteFromCF(cf_id);
+        if (cf_id) {
+            const deleteFromCFResponse = await deleteFromCF(cf_id);
+        }
         if (upscale_cf_id) {
             await deleteFromCF(upscale_cf_id);
         }
-
-
         return res.status(200).json({ message: 'Image deleted successfully' });
     } catch (error) {
         console.error(error);

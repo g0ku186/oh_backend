@@ -1,5 +1,7 @@
 const axios = require('axios');
-const uploadToCF = async (url) => {
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const uploadToCF = async (url, retries = 3, delay = 3000) => {
     try {
         console.log('Uploading to CF')
         const body = new FormData();
@@ -13,9 +15,15 @@ const uploadToCF = async (url) => {
         return res.data;
 
     } catch (e) {
-        console.log("ERROR:");
-        console.log(e.response.data);
-        throw e;
+        if (retries > 0) {
+            console.log('Failed to upload to CF. Retrying...');
+            await sleep(delay); // wait for the given delay
+            return uploadToCF(url, retries - 1, delay); // recursively retry
+        } else {
+            console.log("ERROR:");
+            console.log(e.response.data);
+            throw e;
+        }
     }
 }
 
