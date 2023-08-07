@@ -21,15 +21,21 @@ const generationsSchema = new Schema(
             type: Boolean,
             default: false,
         },
-        upscaled: {
-            type: Boolean,
-            default: false,
-        },
         parameters: Schema.Types.Mixed,
         cf_uploaded: Boolean,
         cf_id: String,
         cf_meta: Schema.Types.Mixed,
-
+        upscaled: {
+            type: Boolean,
+            default: false,
+        },
+        upscale_status: String,
+        upscale_jobId: Number,
+        upscale_cf_id: String,
+        upscale_cf_meta: Schema.Types.Mixed,
+        upscale_cf_uploaded: Boolean,
+        upscale_imgLink: String,
+        upscale_model: String,
     },
     { timestamps: true }
 );

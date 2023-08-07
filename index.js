@@ -18,6 +18,8 @@ const bookmarkImg = require('./controllers/bookmarkImg');
 const deleteImg = require('./controllers/deleteImg');
 const getUserDetails = require('./controllers/getUserDetails');
 const getImageStatus = require('./controllers/getImageStatus');
+const upscaleImage = require('./controllers/upscaleImage');
+const getUpscaleImageStatus = require('./controllers/getUpscaleImageStatus');
 
 const app = express();
 
@@ -49,8 +51,11 @@ app.get('/generations/:id', async function (req, res) {
 
 app.post('/api/v1/status/:jobid', isAuthenticated, getImageStatus);
 
+app.post('/api/v1/upscaleStatus/:jobid', isAuthenticated, getUpscaleImageStatus);
 
 app.post('/api/v1/generateImage', isAuthenticated, verifyCredits, generateImage);
+
+app.post('/api/v1/upscaleImage', isAuthenticated, upscaleImage);
 
 app.post('/api/v1/user/login', isAuthenticated, createOrUpdateUser);
 

@@ -36,6 +36,7 @@ const Ip = require('../models/ipsModel');
 // }
 const generateImageDimensions = (image_orientation, high_quality) => {
     let width, height;
+    let upscale = 'no';
 
     // Determine dimensions based on image orientation
     switch (image_orientation) {
@@ -57,6 +58,7 @@ const generateImageDimensions = (image_orientation, high_quality) => {
 
     // Adjust dimensions for high quality
     if (high_quality) {
+        upscale = "1";
         if (image_orientation === 'square') {
             width *= 2;
             height *= 2;
@@ -66,7 +68,7 @@ const generateImageDimensions = (image_orientation, high_quality) => {
         }
     }
 
-    return { width, height };
+    return { width, height, upscale };
 };
 
 const defaultNegativePrompt = 'child, childlike, Below 20, kids,';
@@ -83,13 +85,13 @@ const generateImage = async (req, res, next) => {
         } = req.body;
 
 
-        const { width, height } = generateImageDimensions(image_orientation, high_quality);
+        const { width, height, upscale } = generateImageDimensions(image_orientation, high_quality);
 
         const { email } = req;
         console.log(instructions);
         const data = {
             key: process.env.sd_apiKey,
-            model_id: 'meina-hentai',
+            model_id: 'hassaku-hentai',
             prompt: instructions,
             negative_prompt: defaultNegativePrompt + ' ' + negative_prompt,
             width: width,
@@ -105,7 +107,7 @@ const generateImage = async (req, res, next) => {
             tomesd: 'yes',
             multi_lingual: 'no',
             use_karras_sigmas: 'yes',
-            upscale: 'no',
+            upscale: upscale,
             vae: null,
             lora_model: null,
             lora_strength: null,
