@@ -98,7 +98,7 @@ const generateImage = async (req, res, next) => {
             height: height,
             samples: '2',
             safety_checker: 'no',
-            num_inference_steps: '20',
+            num_inference_steps: '30',
             enhance_prompt: 'no',
             scheduler: 'EulerAncestralDiscreteScheduler',
             seed: seed,
