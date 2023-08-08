@@ -9,7 +9,7 @@ const generationsModel = require('./models/generationsModel');
 
 //controllers
 const isAuthenticated = require('./controllers/authMiddleware');
-const verifyCredits = require('./controllers/verifyCredits');
+const verifyCreditsAndSubscription = require('./controllers/verifyCreditsAndSubscription');
 const generateImage = require('./controllers/generateImage');
 const createOrUpdateUser = require('./controllers/createOrUpdateUser');
 const getImages = require('./controllers/getImages');
@@ -20,6 +20,7 @@ const getUserDetails = require('./controllers/getUserDetails');
 const getImageStatus = require('./controllers/getImageStatus');
 const upscaleImage = require('./controllers/upscaleImage');
 const getUpscaleImageStatus = require('./controllers/getUpscaleImageStatus');
+const activateLicense = require('./controllers/activateLicense');
 
 const app = express();
 
@@ -53,7 +54,7 @@ app.post('/api/v1/status/:jobid', isAuthenticated, getImageStatus);
 
 app.post('/api/v1/upscaleStatus/:jobid', isAuthenticated, getUpscaleImageStatus);
 
-app.post('/api/v1/generateImage', isAuthenticated, verifyCredits, generateImage);
+app.post('/api/v1/generateImage', isAuthenticated, verifyCreditsAndSubscription, generateImage);
 
 app.post('/api/v1/upscaleImage', isAuthenticated, upscaleImage);
 
@@ -69,9 +70,11 @@ app.get('/api/v1/user/getImages', isAuthenticated, getImages);
 
 app.get('/api/v1/user/getPublicImages', getPublicImages);
 
+app.post('/api/v1/user/activateLicense', isAuthenticated, activateLicense);
+
 app.use((err, req, res, next) => {
     console.log('Came to error handler');
-    res.status(500).send("An error occurred while generating the image.");
+    res.status(500).json({ message: "An error occurred while generating the image." });
 });
 
 
