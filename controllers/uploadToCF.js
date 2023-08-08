@@ -21,7 +21,7 @@ const uploadToCF = async (url, retries = 3, delay = 3000) => {
             return uploadToCF(url, retries - 1, delay); // recursively retry
         } else {
             console.log("ERROR:");
-            console.log(e.response.data);
+            console.log(e.response);
             throw e;
         }
     }
