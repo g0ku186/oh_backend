@@ -34,7 +34,7 @@ const Ip = require('../models/ipsModel');
 //         console.log("ERROR:" + e);
 //     }
 // }
-const generateImageDimensions = (image_orientation, high_quality) => {
+const generateImageDimensions = (image_orientation) => {
     let width, height;
     let upscale = 'no';
 
@@ -43,6 +43,7 @@ const generateImageDimensions = (image_orientation, high_quality) => {
         case 'square':
             width = 512;
             height = 512;
+            upscale = '2';
             break;
         case 'portrait':
             width = 512;
@@ -56,10 +57,6 @@ const generateImageDimensions = (image_orientation, high_quality) => {
             throw new Error('Invalid image orientation');
     }
 
-    // Adjust dimensions for high quality
-    if (high_quality) {
-        upscale = '2';
-    }
 
     return { width, height, upscale };
 };
@@ -79,7 +76,7 @@ const generateImage = async (req, res, next) => {
         } = req.body;
 
 
-        const { width, height, upscale } = generateImageDimensions(image_orientation, high_quality);
+        const { width, height, upscale } = generateImageDimensions(image_orientation);
 
         const { email } = req;
         console.log(instructions);
