@@ -58,16 +58,10 @@ const generateImageDimensions = (image_orientation, high_quality) => {
 
     // Adjust dimensions for high quality
     if (high_quality) {
-        if (image_orientation === 'square') {
-            width *= 2;
-            height *= 2;
-        } else {
-            width *= 1.5;
-            height *= 1.5;
-        }
+        upscale = '2';
     }
 
-    return { width, height };
+    return { width, height, upscale };
 };
 
 const defaultNegativePrompt = 'child, childlike, Below 20, kids,';
@@ -96,7 +90,7 @@ const generateImage = async (req, res, next) => {
             negative_prompt: defaultNegativePrompt + ' ' + negative_prompt,
             width: width,
             height: height,
-            samples: '2',
+            samples: '1',
             safety_checker: 'no',
             num_inference_steps: '30',
             enhance_prompt: 'no',
@@ -107,7 +101,7 @@ const generateImage = async (req, res, next) => {
             tomesd: 'yes',
             multi_lingual: 'no',
             use_karras_sigmas: 'yes',
-            upscale: 'no',
+            upscale: upscale,
             vae: null,
             lora_model: null,
             lora_strength: null,
