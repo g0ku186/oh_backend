@@ -19,7 +19,7 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
             if (user.current_usage < user.limit) {
                 next();
             } else {
-                return res.status(403).json({ message: "Limit exceeded. Please subscribe to one of our plans." });
+                return res.status(403).json({ message: "Free limit exceeded. Please subscribe to one of our plans." });
             }
         } else {
             if (!user.subscriptionDetailsUpdatedAt || (user.subscriptionDetailsUpdatedAt && (new Date() - user.subscriptionDetailsUpdatedAt) > 86400000)) {

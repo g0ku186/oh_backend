@@ -9,7 +9,11 @@ const getImages = async (req, res) => {
         const bookmark = req.query.bookmark === 'true'; // defaults to false
         console.log('Bookmark is')
         console.log(bookmark);
-        const skip = (page - 1) * limit + additionalSkip;
+        let skip = (page - 1) * limit + additionalSkip;
+
+        if (skip < 0) {
+            skip = 0;
+        }
 
         const query = { email: email };
 
