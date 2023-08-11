@@ -10,8 +10,8 @@ const Ip = require('../models/ipsModel');
 //     }
 // ]
 
-//models: meina-hentai, hassaku-hentai, grapefruit-hentai-mo, abyssorangemix2nsfw, anything-v5
-
+//models: meina-hentai, hassaku-hentai, grapefruit-hentai-mo, abyssorangemix2nsfw, anything-v5, grapefruit-nsfw-anim
+//meina-hentai - artistic
 // Euler A = EulerAncestralDiscreteScheduler
 // Euler = EulerDiscreteScheduler, UniPCMultistepScheduler
 // DPM++ SDE Karras = DPMSolverMultistepScheduler
@@ -62,34 +62,46 @@ const generateImageDimensions = (image_orientation) => {
 };
 
 const defaultNegativePrompt = 'child, childlike, Below 20, kids,';
+const defaultPositivePrompt = 'adult, Above 20, mature, (masterpiece), (best quality)';
 
 const generateImage = async (req, res, next) => {
     try {
         const {
             instructions,
-            negative_prompt = '(worst quality, low quality:1.4), monochrome, zombie, (interlocked fingers:1.2), multiple views, comic, sketch, animal ears, pointy ears',
+            negative_prompt = '',
             image_orientation = 'square',
             high_quality = false,
             guidance_scale = 7.5,
             seed = null,
             init_image = null,
+            style = "classic",
         } = req.body;
 
 
         const { width, height, upscale } = generateImageDimensions(image_orientation);
+        let model_id;
+        if (style === "classic") {
+            model_id = 'hassaku-hentai';
+        } else if (style === "anime") {
+            model_id = 'meina-hentai';
+        } else {
+            model_id = 'hassaku-hentai';
+        }
+
+        console.log(`Model ID: ${model_id}`)
 
         const { email } = req;
-        console.log(instructions);
+        // console.log(instructions);
         const data = {
             key: process.env.sd_apiKey,
-            model_id: 'hassaku-hentai',
-            prompt: instructions,
+            model_id: model_id,
+            prompt: instructions + ' ' + defaultPositivePrompt,
             negative_prompt: defaultNegativePrompt + ' ' + negative_prompt,
             width: width,
             height: height,
             samples: '1',
             safety_checker: 'no',
-            num_inference_steps: '30',
+            num_inference_steps: '20',
             enhance_prompt: 'no',
             scheduler: 'EulerAncestralDiscreteScheduler',
             seed: seed,
@@ -109,11 +121,11 @@ const generateImage = async (req, res, next) => {
         let response;
         if (init_image) {
             data.init_image = init_image;
-            console.log(data);
+            // console.log(data);
             console.log('Hitting remix endpoint')
             response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
         } else {
-            console.log(data);
+            // console.log(data);
             response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
         }
         console.log(response.data);
@@ -140,7 +152,7 @@ const generateImage = async (req, res, next) => {
                 email: email,
                 imgId: i + '-' + baseImgId, // append the index to the baseImgId
                 imgLink: imgLink,
-                prompt: response.data.meta.prompt,
+                prompt: instructions,
                 model: response.data.meta.model_id,
                 jobId: response.data.id,
                 isImgGenerated: isImgGenerated,
@@ -154,6 +166,7 @@ const generateImage = async (req, res, next) => {
                     high_quality: high_quality,
                     width: response.data.meta.W,
                     height: response.data.meta.H,
+                    style: style,
                     samples: response.data.meta.n_samples,
                     num_inference_steps: response.data.meta.steps,
                     scheduler: response.data.meta.scheduler,
@@ -164,6 +177,7 @@ const generateImage = async (req, res, next) => {
                     lora_strength: response.data.meta.lora_strength,
                     clip_skip: response.data.meta.clip_skip,
                     init_image: response.data.meta.init_image,
+                    safety_checker_type: response.data.meta.safety_checker_type,
                 },
             };
         });
@@ -191,10 +205,11 @@ const generateImage = async (req, res, next) => {
                     negative_prompt: generation.parameters.negative_prompt,
                     seed: generation.parameters.seed,
                     guidance_scale: generation.parameters.guidance_scale,
+                    style: generation.parameters.style,
                 }
             };
         });
-        console.log(finalData)
+        // console.log(finalData)
         res.send(finalData);
         //increase current_usage in the user model by 1
         if (email) {
