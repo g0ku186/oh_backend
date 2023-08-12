@@ -43,6 +43,7 @@ const usersSchema = new Schema(
             short_product_id: String,
             email: String,
             price: Number,
+            recurrence: String,
             order_number: String,
             variants: String,
             ip_country: String,

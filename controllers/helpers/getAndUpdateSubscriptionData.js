@@ -23,6 +23,7 @@ const getDataFromGumRoad = async (license_key) => {
 const getAndUpdateSubscriptionData = async (email, license_key) => {
     try {
         const gumRoadResponse = await getDataFromGumRoad(license_key);
+        console.log(gumRoadResponse);
         const { subscriptionDetails, subscriptionEnded, subscriptionEndedAt, limit, plan, canGenerate } = generateSubscriptionStatus(gumRoadResponse);
         const updatedUser = await User.findOneAndUpdate({ email: email }, {
             license_key: license_key,

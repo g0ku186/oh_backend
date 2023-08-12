@@ -5,6 +5,7 @@ const generateSubscriptionStatus = (gumRoadResponse) => {
     subscriptionDetails.short_product_id = gumRoadResponse.purchase.short_product_id;
     subscriptionDetails.email = gumRoadResponse.purchase.email;
     subscriptionDetails.price = gumRoadResponse.purchase.price;
+    subscriptionDetails.recurrence = gumRoadResponse.purchase.recurrence;
     subscriptionDetails.order_number = gumRoadResponse.purchase.order_number;
     subscriptionDetails.variants = gumRoadResponse.purchase.variants;
     subscriptionDetails.ip_country = gumRoadResponse.purchase.ip_country;
@@ -13,6 +14,7 @@ const generateSubscriptionStatus = (gumRoadResponse) => {
     subscriptionDetails.subscription_ended_at = gumRoadResponse.purchase.subscription_ended_at;
     subscriptionDetails.subscription_cancelled_at = gumRoadResponse.purchase.subscription_cancelled_at;
     subscriptionDetails.subscription_failed_at = gumRoadResponse.purchase.subscription_failed_at;
+
 
     const subscriptionEnded = subscriptionDetails.subscription_ended_at || subscriptionDetails.subscription_cancelled_at || subscriptionDetails.subscription_failed_at ? true : false;
     const subscriptionEndedAt = subscriptionEnded ? new Date(Math.max(new Date(subscriptionDetails.subscription_ended_at), new Date(subscriptionDetails.subscription_cancelled_at), new Date(subscriptionDetails.subscription_failed_at))) : null;
@@ -24,12 +26,12 @@ const generateSubscriptionStatus = (gumRoadResponse) => {
     }
     let limit = 1;
     let plan = "free";
-    if (subscriptionDetails.variants === "(Beginner)") {
+    if (subscriptionDetails.recurrence === "yearly") {
         limit = 1000;
-        plan = "beginner";
-    } else if (subscriptionDetails.variants === "(Expert)") {
-        limit = 9999;
-        plan = "expert";
+        plan = "yearly";
+    } else {
+        limit = 1000;
+        plan = "monthly";
     }
     return { subscriptionDetails, subscriptionEnded, subscriptionEndedAt, limit, plan, canGenerate };
 
