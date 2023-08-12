@@ -18,7 +18,9 @@ const generateSubscriptionStatus = (gumRoadResponse) => {
 
     const subscriptionEnded = subscriptionDetails.subscription_ended_at || subscriptionDetails.subscription_cancelled_at || subscriptionDetails.subscription_failed_at ? true : false;
     const subscriptionEndedAt = subscriptionEnded ? new Date(Math.max(new Date(subscriptionDetails.subscription_ended_at), new Date(subscriptionDetails.subscription_cancelled_at), new Date(subscriptionDetails.subscription_failed_at))) : null;
-
+    console.log(subscriptionEnded);
+    console.log('Subscription ended at')
+    console.log(subscriptionEndedAt)
     //if subscription ended, and the ending date is less than date.now, then set canGenerate as false
     let canGenerate = true;
     if (subscriptionEndedAt && new Date(subscriptionEndedAt) < Date.now()) {

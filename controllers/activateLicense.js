@@ -18,8 +18,7 @@ const activateLicense = async (req, res, next) => {
         }
         const updatedUser = await getAndUpdateSubscriptionData(email, req.body.license_key);
         if (updatedUser.subscriptionEnded) {
-            console.log('Came to subscription ended condition')
-            if (new Date(subscriptionEndedAt) < Date.now()) {
+            if (new Date(updatedUser.subscriptionEndedAt) < Date.now()) {
                 console.log('Subscription has ended');
                 res.status(401).json({ message: 'Subscription has ended' });
                 return;
