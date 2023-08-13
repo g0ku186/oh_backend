@@ -5,7 +5,6 @@ const getAndUpdateSubscriptionData = require('../helpers/getAndUpdateSubscriptio
 
 
 const activateLicense = async (req, res, next) => {
-    console.log('Cme to activate license function')
     const email = req.email;
     try {
         const existingKey = await User.findOne({ license_key: req.body.license_key });

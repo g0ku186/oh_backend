@@ -15,7 +15,6 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
             return res.status(404).json({ message: "User not found" });
         }
         if (!user.license_key) {
-            console.log('Here there is no license key')
             if (user.current_usage < user.limit) {
                 next();
             } else {
@@ -23,7 +22,6 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
             }
         } else {
             if (!user.subscriptionDetailsUpdatedAt || (user.subscriptionDetailsUpdatedAt && (new Date() - user.subscriptionDetailsUpdatedAt) > 86400000)) {
-                console.log('stale data')
                 const updatedUser = await getAndUpdateSubscriptionData(user.email, user.license_key);
                 if (!updatedUser.canGenerate) {
                     return res.status(403).json({ message: "Your subscription ended." });
@@ -35,7 +33,6 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
                     }
                 }
             } else {
-                console.log('fresh data')
                 if (!user.canGenerate) {
                     return res.status(403).json({ message: "Your subscription ended. If you have subscribed again, please validate your license key in profile page." });
                 } else {

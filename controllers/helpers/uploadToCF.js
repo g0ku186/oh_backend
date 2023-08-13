@@ -4,7 +4,6 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const uploadToCF = async (url, retries = 3, delay = 3000) => {
     try {
-        console.log('Uploading to CF')
         const body = new FormData();
         body.append("url", url);
         const res = await axios.post(

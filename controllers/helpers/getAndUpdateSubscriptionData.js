@@ -6,7 +6,6 @@ const generateSubscriptionStatus = require('./generateSubscriptionStatus')
 const getDataFromGumRoad = async (license_key) => {
     const gumRoadEndPoint = "https://api.gumroad.com/v2/licenses/verify";
     try {
-        console.log('Checking Gumroad for license key');
         const body = {
             "product_id": process.env.GR_productId,
             "license_key": license_key
@@ -23,7 +22,6 @@ const getDataFromGumRoad = async (license_key) => {
 const getAndUpdateSubscriptionData = async (email, license_key) => {
     try {
         const gumRoadResponse = await getDataFromGumRoad(license_key);
-        console.log(gumRoadResponse);
         const { subscriptionDetails, subscriptionEnded, subscriptionEndedAt, limit, plan, canGenerate } = generateSubscriptionStatus(gumRoadResponse);
         const updatedUser = await User.findOneAndUpdate({ email: email }, {
             license_key: license_key,

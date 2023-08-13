@@ -3,8 +3,6 @@ const Generation = require('../models/generationsModel');
 const uploadToCF = require('./helpers/uploadToCF');
 
 const upscaleImage = async (req, res, next) => {
-
-    console.log('Came to upscaleImage')
     try {
         const {
             imgId,
@@ -41,8 +39,6 @@ const upscaleImage = async (req, res, next) => {
         existingRecord.upscale_cf_id = null;
         existingRecord.upscale_cf_meta = {};
         if (existingRecord.upscaled) {
-            console.log('Uploading to CF yo')
-            console.log(existingRecord.upscale_imgLink);
             const cfResponse = await uploadToCF(existingRecord.upscale_imgLink);
             existingRecord.upscale_cf_uploaded = cfResponse.success;
             existingRecord.upscale_cf_id = cfResponse.result.id;
@@ -64,7 +60,6 @@ const upscaleImage = async (req, res, next) => {
             upscale_jobId: response.data.id,
             upscale_cf_id: existingRecord.upscale_cf_id,
         }
-        console.log(finalData)
         res.send(finalData);
     } catch (err) {
         console.log(err.response.status);

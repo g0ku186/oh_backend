@@ -91,10 +91,9 @@ const generateImage = async (req, res, next) => {
             model_id = 'hassaku-hentai';
         }
 
-        console.log(`Model ID: ${model_id}`)
 
         const { email } = req;
-        // console.log(instructions);
+
         const data = {
             key: process.env.sd_apiKey,
             model_id: model_id,
@@ -124,11 +123,8 @@ const generateImage = async (req, res, next) => {
         let response;
         if (init_image) {
             data.init_image = init_image;
-            // console.log(data);
-            console.log('Hitting remix endpoint')
             response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
         } else {
-            // console.log(data);
             response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
         }
         console.log(response.data);
@@ -142,8 +138,6 @@ const generateImage = async (req, res, next) => {
             let cf_id = null;
             let cf_meta = {};
             if (isImgGenerated) {
-                console.log('Uploading to CF')
-                console.log(imgLink);
                 const cfResponse = await uploadToCF(imgLink);
                 cf_uploaded = cfResponse.success;
                 cf_id = cfResponse.result.id;

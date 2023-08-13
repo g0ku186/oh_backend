@@ -89,6 +89,7 @@ app.delete('/api/v1/image/delete', isAuthenticated, deleteImg);
 
 app.use((err, req, res, next) => {
     console.log('Came to error handler');
+    console.log(err);
     res.status(500).json({ message: "An error occurred while generating the image." });
 });
 
