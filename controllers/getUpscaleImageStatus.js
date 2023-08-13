@@ -1,6 +1,6 @@
 const axios = require('axios');
 const generationsModel = require('../models/generationsModel');
-const uploadToCF = require('./uploadToCF');
+const uploadToCF = require('./helpers/uploadToCF');
 
 
 const getUpscaleImageStatus = async (req, res) => {

@@ -1,5 +1,5 @@
-const Generations = require('../models/generationsModel');
-const deleteFromCF = require('./deleteFromCF');
+const Generations = require('../../models/generationsModel');
+const deleteFromCF = require('./../helpers/deleteFromCF');
 
 const deleteImg = async (req, res) => {
     try {

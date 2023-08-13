@@ -1,4 +1,4 @@
-const auth = require("../firebase");
+const auth = require("../../firebase");
 
 const isAuthenticated = async (req, res, next) => {
     try {

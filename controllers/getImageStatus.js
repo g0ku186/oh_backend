@@ -1,6 +1,6 @@
 const axios = require('axios');
 const generationsModel = require('../models/generationsModel');
-const uploadToCF = require('./uploadToCF');
+const uploadToCF = require('./helpers/uploadToCF');
 
 function getImgUrl(imageId, imagesArray) {
     for (let i = 0; i < imagesArray.length; i++) {

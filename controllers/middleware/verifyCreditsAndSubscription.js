@@ -1,5 +1,5 @@
-const User = require('../models/usersModel');
-const getAndUpdateSubscriptionData = require('./helpers/getAndUpdateSubscriptionData');
+const User = require('../../models/usersModel');
+const getAndUpdateSubscriptionData = require('../helpers/getAndUpdateSubscriptionData');
 
 const verifyCreditsAndSubscription = async (req, res, next) => {
     //first get user details.

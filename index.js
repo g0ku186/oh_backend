@@ -8,19 +8,28 @@ const db = require('./db');
 const generationsModel = require('./models/generationsModel');
 
 //controllers
-const isAuthenticated = require('./controllers/authMiddleware');
-const verifyCreditsAndSubscription = require('./controllers/verifyCreditsAndSubscription');
+
+//generate & upscale Controllers
 const generateImage = require('./controllers/generateImage');
-const createOrUpdateUser = require('./controllers/createOrUpdateUser');
-const getImages = require('./controllers/getImages');
-const getPublicImages = require('./controllers/getPublicImages');
-const bookmarkImg = require('./controllers/bookmarkImg');
-const deleteImg = require('./controllers/deleteImg');
-const getUserDetails = require('./controllers/getUserDetails');
-const getImageStatus = require('./controllers/getImageStatus');
 const upscaleImage = require('./controllers/upscaleImage');
+const getImageStatus = require('./controllers/getImageStatus');
 const getUpscaleImageStatus = require('./controllers/getUpscaleImageStatus');
-const activateLicense = require('./controllers/activateLicense');
+
+
+//Image Controllers
+const getImages = require('./controllers/image/getImages');
+const getPublicImages = require('./controllers/image/getPublicImages');
+const bookmarkImg = require('./controllers/image/bookmarkImg');
+const deleteImg = require('./controllers/image/deleteImg');
+
+//User Controllers
+const createOrUpdateUser = require('./controllers/user/createOrUpdateUser');
+const getUserDetails = require('./controllers/user/getUserDetails');
+const activateLicense = require('./controllers/user/activateLicense');
+
+//middleware
+const isAuthenticated = require('./controllers/middleware/authMiddleware');
+const verifyCreditsAndSubscription = require('./controllers/middleware/verifyCreditsAndSubscription');
 
 const app = express();
 
@@ -50,6 +59,7 @@ app.get('/generations/:id', async function (req, res) {
 });
 
 
+//generate routes
 app.post('/api/v1/status/:jobid', isAuthenticated, getImageStatus);
 
 app.post('/api/v1/upscaleStatus/:jobid', isAuthenticated, getUpscaleImageStatus);
@@ -58,19 +68,24 @@ app.post('/api/v1/generateImage', isAuthenticated, verifyCreditsAndSubscription,
 
 app.post('/api/v1/upscaleImage', isAuthenticated, upscaleImage);
 
+
+//user routes
 app.post('/api/v1/user/login', isAuthenticated, createOrUpdateUser);
 
 app.get('/api/v1/user/profile', isAuthenticated, getUserDetails);
+
+app.post('/api/v1/user/activateLicense', isAuthenticated, activateLicense);
+
+
+//image routes
+app.get('/api/v1/image/getPublicImages', getPublicImages);
+
+app.get('/api/v1/image/getImages', isAuthenticated, getImages);
 
 app.post('/api/v1/image/bookmark', isAuthenticated, bookmarkImg);
 
 app.delete('/api/v1/image/delete', isAuthenticated, deleteImg);
 
-app.get('/api/v1/user/getImages', isAuthenticated, getImages);
-
-app.get('/api/v1/user/getPublicImages', getPublicImages);
-
-app.post('/api/v1/user/activateLicense', isAuthenticated, activateLicense);
 
 app.use((err, req, res, next) => {
     console.log('Came to error handler');

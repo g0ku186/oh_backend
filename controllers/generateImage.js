@@ -1,8 +1,13 @@
 const axios = require('axios');
+
+//models
 const User = require('../models/usersModel');
 const Generation = require('../models/generationsModel');
-const uploadToCF = require('./uploadToCF');
 const Ip = require('../models/ipsModel');
+
+//helpers
+const uploadToCF = require('./helpers/uploadToCF');
+
 // const modelConfig = [
 //     v1 : {
 //         modelId: 'meina-hentai',
@@ -56,8 +61,6 @@ const generateImageDimensions = (image_orientation) => {
         default:
             throw new Error('Invalid image orientation');
     }
-
-
     return { width, height, upscale };
 };
 

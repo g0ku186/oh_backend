@@ -1,4 +1,4 @@
-const Generations = require('../models/generationsModel');
+const Generations = require('../../models/generationsModel');
 
 const bookmarkImg = async (req, res) => {
 

@@ -1,6 +1,6 @@
 const axios = require('axios');
-const User = require('../models/usersModel');
-const getAndUpdateSubscriptionData = require('./helpers/getAndUpdateSubscriptionData');
+const User = require('../../models/usersModel');
+const getAndUpdateSubscriptionData = require('../helpers/getAndUpdateSubscriptionData');
 
 
 

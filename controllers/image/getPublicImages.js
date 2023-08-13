@@ -1,4 +1,4 @@
-const Generations = require('../models/generationsModel');
+const Generations = require('../../models/generationsModel');
 
 const getPublicImages = async (req, res) => {
     try {
