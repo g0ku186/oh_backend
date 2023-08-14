@@ -127,7 +127,7 @@ const generateImage = async (req, res, next) => {
         } else {
             response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
         }
-        console.log(response.data);
+        // console.log(response.data);
         const isImgGenerated = response.data.status === 'success' ? true : false;
         const status = isImgGenerated ? 'success' : 'processing';
         const imgLinks = isImgGenerated ? response.data.output : response.data.future_links;

@@ -17,7 +17,7 @@ const bookmarkImg = async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Something went wrong. Please try again." });
     }
 
 }

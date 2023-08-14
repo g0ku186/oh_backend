@@ -29,7 +29,7 @@ const upscaleImage = async (req, res, next) => {
             model_id: "RealESRGAN_x4plus_anime_6B"
         });
 
-        console.log(response.data);
+        // console.log(response.data);
         existingRecord.upscale_jobId = response.data.id;
         existingRecord.upscaled = response.data.status === 'success' ? true : false;
         existingRecord.upscale_status = existingRecord.upscaled ? 'success' : 'processing';

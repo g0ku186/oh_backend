@@ -26,7 +26,7 @@ const deleteImg = async (req, res) => {
         }
         return res.status(200).json({ message: 'Image deleted successfully' });
     } catch (error) {
-        console.error(error);
+        console.log(error);
         return res.status(500).json({ message: 'Server error' });
     }
 }
