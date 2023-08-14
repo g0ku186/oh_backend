@@ -192,6 +192,7 @@ const generateImage = async (req, res, next) => {
                 cf_uploaded: cf_uploaded,
                 cf_id: cf_id,
                 cf_meta: cf_meta,
+                ip: req.clientIp,
                 parameters: {
                     negative_prompt: negative_prompt,
                     image_orientation: image_orientation,

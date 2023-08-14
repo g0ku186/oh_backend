@@ -4,6 +4,7 @@ const createOrUpdateUser = async (req, res) => {
 
     try {
         const { email, name, profile_pic, email_verified } = req;
+        const ip = req.clientIp;
         const user = await User.findOne({ email });
         if (user) {
             if (!user.email_verified) {
@@ -18,6 +19,7 @@ const createOrUpdateUser = async (req, res) => {
             name,
             profile_pic,
             email_verified,
+            ip
         });
         return res.status(200).json({ message: 'Success' });
     } catch (error) {
