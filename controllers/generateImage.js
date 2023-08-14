@@ -91,7 +91,8 @@ const generateImage = async (req, res, next) => {
         } else if (style === "sd") {
             model_id = 'sd';
         } else if (style === "rv") {
-            model_id = 'realistic-vision-v13';
+            // model_id = 'realistic-vision-v13';
+            model_id = 'sdxl';
         } else if (style === "wifu") {
             model_id = 'wifu-diffusion';
         } else if (style === "f222") {
@@ -99,7 +100,7 @@ const generateImage = async (req, res, next) => {
         } else {
             model_id = 'hassaku-hentai';
         }
-
+        console.log(model_id);
         const { email } = req;
 
         const data = {
@@ -131,25 +132,51 @@ const generateImage = async (req, res, next) => {
             data.model_id = model_id;
         }
 
-        let response;
-        if (init_image) {
-            data.init_image = init_image;
-            if (model_id === 'sd') {
-                console.log('SD Img 2 Img')
-                response = await axios.post('https://stablediffusionapi.com/api/v3/img2img', data);
-            } else {
-                response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
-            }
 
-        } else {
-            if (model_id === 'sd') {
-                console.log('SD Text 2 Img')
-                response = await axios.post('https://stablediffusionapi.com/api/v3/text2img', data);
-            } else {
-                response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
+        let attempts = 0;
+        const maxAttempts = 3;
+
+        const makeRequest = async () => {
+            try {
+                if (init_image) {
+                    data.init_image = init_image;
+                    if (model_id === 'sd') {
+                        console.log('SD Img 2 Img')
+                        return await axios.post('https://stablediffusionapi.com/api/v3/img2img', data);
+                    } else {
+                        return await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
+                    }
+                } else {
+                    if (model_id === 'sd') {
+                        console.log('SD Text 2 Img')
+                        return await axios.post('https://stablediffusionapi.com/api/v3/text2img', data);
+                    } else {
+                        return await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
+                    }
+                }
+            } catch (err) {
+                throw err;
+            }
+        };
+
+
+        //check for response.data.status, if it is 'failed', retry 3 times
+        let response;
+        while (attempts < maxAttempts) {
+            try {
+                response = await makeRequest();
+                if (response.data.status === 'failed') {
+                    attempts++;
+                    console.log('Attempt ' + attempts + ' failed');
+                    await new Promise(res => setTimeout(res, 3000));
+                } else {
+                    break;
+                }
+            } catch (err) {
+                throw err;
             }
         }
-        // console.log(response.data);
+        console.log(response.data);
         const isImgGenerated = response.data.status === 'success' ? true : false;
         const status = isImgGenerated ? 'success' : 'processing';
         const imgLinks = isImgGenerated ? response.data.output : response.data.future_links;
@@ -172,7 +199,7 @@ const generateImage = async (req, res, next) => {
                 imgId: i + '-' + baseImgId, // append the index to the baseImgId
                 imgLink: imgLink,
                 prompt: instructions,
-                model: response.data.meta.model_id,
+                model: response.data.meta.model_id ? response.data.meta.model_id : 'sd',
                 jobId: response.data.id,
                 isImgGenerated: isImgGenerated,
                 status: status,

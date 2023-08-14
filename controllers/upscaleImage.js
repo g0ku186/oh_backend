@@ -22,7 +22,7 @@ const upscaleImage = async (req, res, next) => {
         }
 
         let response;
-        if (model_id !== 'sd') {
+        if (model_id === 'hassaku-hentai' || model_id === 'meina-hentai') {
             response = await axios.post(`https://stablediffusionapi.com/api/v3/super_resolution`, {
                 "key": process.env.sd_apiKey,
                 url: url,
