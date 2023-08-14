@@ -7,6 +7,7 @@ const Ip = require('../models/ipsModel');
 
 //helpers
 const uploadToCF = require('./helpers/uploadToCF');
+const { model } = require('mongoose');
 
 // const modelConfig = [
 //     v1 : {
@@ -87,16 +88,22 @@ const generateImage = async (req, res, next) => {
             model_id = 'hassaku-hentai';
         } else if (style === "anime") {
             model_id = 'meina-hentai';
+        } else if (style === "sd") {
+            model_id = 'sd';
+        } else if (style === "rv") {
+            model_id = 'realistic-vision-v13';
+        } else if (style === "wifu") {
+            model_id = 'wifu-diffusion';
+        } else if (style === "f222") {
+            model_id = 'f222-diffusion';
         } else {
             model_id = 'hassaku-hentai';
         }
-
 
         const { email } = req;
 
         const data = {
             key: process.env.sd_apiKey,
-            model_id: model_id,
             prompt: instructions + ' ' + defaultPositivePrompt,
             negative_prompt: defaultNegativePrompt + ' ' + negative_prompt,
             width: width,
@@ -120,12 +127,27 @@ const generateImage = async (req, res, next) => {
             clip_skip: 2
         };
 
+        if (model_id !== 'sd') {
+            data.model_id = model_id;
+        }
+
         let response;
         if (init_image) {
             data.init_image = init_image;
-            response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
+            if (model_id === 'sd') {
+                console.log('SD Img 2 Img')
+                response = await axios.post('https://stablediffusionapi.com/api/v3/img2img', data);
+            } else {
+                response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
+            }
+
         } else {
-            response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
+            if (model_id === 'sd') {
+                console.log('SD Text 2 Img')
+                response = await axios.post('https://stablediffusionapi.com/api/v3/text2img', data);
+            } else {
+                response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
+            }
         }
         // console.log(response.data);
         const isImgGenerated = response.data.status === 'success' ? true : false;

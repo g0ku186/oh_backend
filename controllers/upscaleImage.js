@@ -12,6 +12,7 @@ const upscaleImage = async (req, res, next) => {
         const { email } = req;
         //first check if this is already upscaled
         const existingRecord = await Generation.findOne({ imgId: imgId, email: email });
+        const model_id = existingRecord.model;
         if (existingRecord.upscaled) {
             return res.status(200).json({ upscale_status: "success", upscale_cf_id: existingRecord.upscale_cf_id });
         }
@@ -20,14 +21,28 @@ const upscaleImage = async (req, res, next) => {
             return res.status(200).json({ upscale_status: "processing" });
         }
 
-        const response = await axios.post(`https://stablediffusionapi.com/api/v3/super_resolution`, {
-            "key": process.env.sd_apiKey,
-            url: url,
-            "scale": 4,
-            webhook: null,
-            face_enhance: false,
-            model_id: "RealESRGAN_x4plus_anime_6B"
-        });
+        let response;
+        if (model_id !== 'sd') {
+            response = await axios.post(`https://stablediffusionapi.com/api/v3/super_resolution`, {
+                "key": process.env.sd_apiKey,
+                url: url,
+                "scale": 4,
+                webhook: null,
+                face_enhance: false,
+                model_id: "RealESRGAN_x4plus_anime_6B"
+            });
+        } else {
+            console.log('SD Upscale')
+            response = await axios.post(`https://stablediffusionapi.com/api/v3/super_resolution`, {
+                "key": process.env.sd_apiKey,
+                url: url,
+                "scale": 4,
+                webhook: null,
+                face_enhance: true,
+                model_id: "realesr-general-x4v3"
+            });
+        }
+
 
         // console.log(response.data);
         existingRecord.upscale_jobId = response.data.id;

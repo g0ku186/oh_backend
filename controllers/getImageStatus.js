@@ -16,9 +16,18 @@ const getImageStatus = async (req, res) => {
     try {
         const jobId = req.params.jobid;
         const imgId = req.body.imgId;
-        const response = await axios.post(`https://stablediffusionapi.com/api/v3/dreambooth/fetch/${jobId}`, {
-            "key": process.env.sd_apiKey
-        });
+        const style = req.body.style;
+        let response;
+        if (style !== 'sd') {
+            response = await axios.post(`https://stablediffusionapi.com/api/v3/dreambooth/fetch/${jobId}`, {
+                "key": process.env.sd_apiKey
+            });
+        } else {
+            console.log('SD Status')
+            response = await axios.post(`https://stablediffusionapi.com/api/v3/fetch/${jobId}`, {
+                "key": process.env.sd_apiKey
+            });
+        }
 
         const status = response.data.status;
         if (status !== 'processing') {
