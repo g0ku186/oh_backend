@@ -74,7 +74,7 @@ const generateImage = async (req, res, next) => {
             negative_prompt = '',
             image_orientation = 'square',
             high_quality = false,
-            guidance_scale = 7.5,
+            guidance_scale = 6,
             seed = null,
             init_image = null,
             style = "classic",
@@ -121,12 +121,47 @@ const generateImage = async (req, res, next) => {
         };
 
         let response;
-        if (init_image) {
-            data.init_image = init_image;
-            response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
-        } else {
-            response = await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
+
+        const makeRequest = async () => {
+            try {
+                if (init_image) {
+                    data.init_image = init_image;
+                    return await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
+                } else {
+                    return await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
+                }
+
+            } catch (err) {
+                console.log(err);
+                throw err;
+            }
         }
+
+        // Make request to Stable Diffusion API, if response.data.status is 'failed', then retry with a gap of 3 secs
+
+        let retryCount = 0;
+        let maxRetries = 3;
+        let retryGap = 3000;
+
+        while (retryCount < maxRetries) {
+            try {
+                response = await makeRequest();
+                if (response.data.status === 'failed') {
+                    console.log(response.data.error_log.server_id);
+                    console.log(response.data.error_log.response.message);
+                    retryCount++;
+                    console.log(`SD API Failed - Retry ${retryCount} of ${maxRetries}...`)
+                    await new Promise(resolve => setTimeout(resolve, retryGap));
+                } else {
+                    break;
+                }
+            } catch (err) {
+                throw err;
+            }
+        }
+
+        if (response.data.status === 'failed') return res.status(500).json({ message: 'High demand. Please try in a bit' });
+
         // console.log(response.data);
         const isImgGenerated = response.data.status === 'success' ? true : false;
         const status = isImgGenerated ? 'success' : 'processing';
