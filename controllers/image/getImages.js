@@ -36,6 +36,7 @@ const getImages = async (req, res) => {
             totalPages: Math.ceil(totalCount / limit),
         });
     } catch (err) {
+        console.log("=============ERROR: Get Images Error=============");
         console.error(err);
         res.status(500).send("Error retrieving images");
     }

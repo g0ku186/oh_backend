@@ -13,6 +13,7 @@ const isAuthenticated = async (req, res, next) => {
         req.email_verified = decodedToken.email_verified;
         next();
     } catch (error) {
+        console.log("=============ERROR: Auth middleware Error=============");
         res.status(401).json({ message: "Unauthenticated. Please refresh the page and login." });
     }
 };

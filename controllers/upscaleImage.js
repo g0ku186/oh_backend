@@ -77,6 +77,7 @@ const upscaleImage = async (req, res, next) => {
         }
         res.send(finalData);
     } catch (err) {
+        console.log("=============ERROR: Upscale Image Error=============");
         console.log(err.response.status);
         next(err);
     }

@@ -22,6 +22,7 @@ const getPublicImages = async (req, res) => {
             totalPages: Math.ceil(totalCount / limit),
         });
     } catch (err) {
+        console.log("=============ERROR: Get Public Images Error=============");
         console.error(err);
         res.status(500).send("Error retrieving public images");
     }

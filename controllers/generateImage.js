@@ -9,37 +9,6 @@ const Ip = require('../models/ipsModel');
 const uploadToCF = require('./helpers/uploadToCF');
 const { model } = require('mongoose');
 
-// const modelConfig = [
-//     v1 : {
-//         modelId: 'meina-hentai',
-
-//     }
-// ]
-
-//models: meina-hentai, hassaku-hentai, grapefruit-hentai-mo, abyssorangemix2nsfw, anything-v5, grapefruit-nsfw-anim
-//meina-hentai - artistic
-// Euler A = EulerAncestralDiscreteScheduler
-// Euler = EulerDiscreteScheduler, UniPCMultistepScheduler
-// DPM++ SDE Karras = DPMSolverMultistepScheduler
-// DPM++ 2M Karras = KDPM2DiscreteScheduler
-// DDIM = DDIMScheduler
-
-// const uploadToCF = async (url) => {
-//     try {
-//         const body = new FormData();
-//         body.append("url", url);
-//         const res = await axios.post(
-//             `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_accountId}/images/v1`, body,
-//             {
-//                 headers: { "Authorization": `Bearer ${process.env.CF_apiKey}` },
-//             }
-//         );
-//         return res.data;
-
-//     } catch (e) {
-//         console.log("ERROR:" + e);
-//     }
-// }
 const generateImageDimensions = (image_orientation) => {
     let width, height;
     let upscale = 'no';
@@ -75,7 +44,7 @@ const generateImage = async (req, res, next) => {
             negative_prompt = '',
             image_orientation = 'square',
             high_quality = false,
-            guidance_scale = 7.5,
+            guidance_scale = 6,
             seed = null,
             init_image = null,
             style = "classic",
@@ -177,6 +146,10 @@ const generateImage = async (req, res, next) => {
             }
         }
         console.log(response.data);
+
+        if (response.data.status === 'failed') return res.status(500).json({ message: 'High demand. Please try in a bit' });
+
+        // console.log(response.data);
         const isImgGenerated = response.data.status === 'success' ? true : false;
         const status = isImgGenerated ? 'success' : 'processing';
         const imgLinks = isImgGenerated ? response.data.output : response.data.future_links;
@@ -206,6 +179,7 @@ const generateImage = async (req, res, next) => {
                 cf_uploaded: cf_uploaded,
                 cf_id: cf_id,
                 cf_meta: cf_meta,
+                ip: req.clientIp,
                 parameters: {
                     negative_prompt: negative_prompt,
                     image_orientation: image_orientation,
@@ -225,6 +199,10 @@ const generateImage = async (req, res, next) => {
                     init_image: response.data.meta.init_image,
                     safety_checker_type: response.data.meta.safety_checker_type,
                 },
+                meta: {
+                    userAgent: req.userAgent,
+                    uniqueIdentifier: req.uniqueIdentifier,
+                }
             };
         });
 
@@ -265,6 +243,7 @@ const generateImage = async (req, res, next) => {
             await Ip.findOneAndUpdate({ ip: ip }, { $inc: { current_usage: 1 } });
         }
     } catch (err) {
+        console.log("=============ERROR: Generating Image Error=============");
         console.log(err);
         next(err);
     }

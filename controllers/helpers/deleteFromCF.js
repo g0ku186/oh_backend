@@ -10,8 +10,7 @@ const deleteFromCF = async (cf_id) => {
         return res.data;
 
     } catch (e) {
-        console.log("ERROR:");
-        console.log(e.response.data);
+        console.log("=============ERROR: Cloudflare Delete Error=============");
         throw e;
     }
 }

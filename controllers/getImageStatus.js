@@ -62,6 +62,7 @@ const getImageStatus = async (req, res) => {
         }
         res.status(200).send({ status });
     } catch (err) {
+        console.log("=============ERROR: Get Image Status Error=============");
         console.log(err);
         res.status(500).send("An error occurred while fetching the status.");
     }
