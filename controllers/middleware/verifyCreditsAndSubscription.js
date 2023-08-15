@@ -45,6 +45,7 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
             }
         }
     } catch (error) {
+        console.log("=============ERROR: Verifying credits error =============");
         console.log(error);
         return res.status(500).json({ message: "Something went wrong. Please reach out to support" });
     }

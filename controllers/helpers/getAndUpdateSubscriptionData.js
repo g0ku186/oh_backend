@@ -14,6 +14,7 @@ const getDataFromGumRoad = async (license_key) => {
         return response.data;
 
     } catch (e) {
+        console.log("=============ERROR: Gumroad License key Error=============");
         throw e;
     }
 }
@@ -36,6 +37,7 @@ const getAndUpdateSubscriptionData = async (email, license_key) => {
         return updatedUser;
 
     } catch (err) {
+        console.log("=============ERROR: Get and Update subscription data Error=============");
         throw err;
     }
 }

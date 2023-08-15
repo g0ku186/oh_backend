@@ -27,7 +27,7 @@ const activateLicense = async (req, res, next) => {
         res.status(200).json({ message: 'License key activated successfully' });
 
     } catch (e) {
-        console.log("ERROR:");
+        console.log("=============ERROR: License Activation Error=============");
         console.log(e);
         if (e?.response?.status === 404 && e?.response?.data?.success === false) {
             res.status(401).json({ message: 'Invalid license key' });

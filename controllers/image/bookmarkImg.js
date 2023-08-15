@@ -16,6 +16,7 @@ const bookmarkImg = async (req, res) => {
             res.status(404).json({ message: "Image not found" });
         }
     } catch (err) {
+        console.log("=============ERROR: Image Bookmark Error=============");
         console.log(err);
         res.status(500).json({ message: "Something went wrong. Please try again." });
     }

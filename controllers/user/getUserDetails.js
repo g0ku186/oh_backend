@@ -11,6 +11,7 @@ const getUserDetails = async (req, res, next) => {
         }
     }
     catch (error) {
+        console.log("=============ERROR: Get User Details Error=============");
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
     }

@@ -30,6 +30,7 @@ const activateLicense = require('./controllers/user/activateLicense');
 //middleware
 const isAuthenticated = require('./controllers/middleware/authMiddleware');
 const verifyCreditsAndSubscription = require('./controllers/middleware/verifyCreditsAndSubscription');
+const uaMiddleware = require('./controllers/middleware/uaMiddleware');
 
 const app = express();
 
@@ -64,13 +65,13 @@ app.post('/api/v1/status/:jobid', isAuthenticated, getImageStatus);
 
 app.post('/api/v1/upscaleStatus/:jobid', isAuthenticated, getUpscaleImageStatus);
 
-app.post('/api/v1/generateImage', isAuthenticated, verifyCreditsAndSubscription, generateImage);
+app.post('/api/v1/generateImage', uaMiddleware, isAuthenticated, verifyCreditsAndSubscription, generateImage);
 
 app.post('/api/v1/upscaleImage', isAuthenticated, upscaleImage);
 
 
 //user routes
-app.post('/api/v1/user/login', isAuthenticated, createOrUpdateUser);
+app.post('/api/v1/user/login', uaMiddleware, isAuthenticated, createOrUpdateUser);
 
 app.get('/api/v1/user/profile', isAuthenticated, getUserDetails);
 

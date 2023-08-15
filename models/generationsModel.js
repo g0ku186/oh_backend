@@ -37,6 +37,7 @@ const generationsSchema = new Schema(
         upscale_imgLink: String,
         upscale_model: String,
         ip: String,
+        meta: Schema.Types.Mixed,
     },
     { timestamps: true }
 );

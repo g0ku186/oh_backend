@@ -8,37 +8,6 @@ const Ip = require('../models/ipsModel');
 //helpers
 const uploadToCF = require('./helpers/uploadToCF');
 
-// const modelConfig = [
-//     v1 : {
-//         modelId: 'meina-hentai',
-
-//     }
-// ]
-
-//models: meina-hentai, hassaku-hentai, grapefruit-hentai-mo, abyssorangemix2nsfw, anything-v5, grapefruit-nsfw-anim
-//meina-hentai - artistic
-// Euler A = EulerAncestralDiscreteScheduler
-// Euler = EulerDiscreteScheduler, UniPCMultistepScheduler
-// DPM++ SDE Karras = DPMSolverMultistepScheduler
-// DPM++ 2M Karras = KDPM2DiscreteScheduler
-// DDIM = DDIMScheduler
-
-// const uploadToCF = async (url) => {
-//     try {
-//         const body = new FormData();
-//         body.append("url", url);
-//         const res = await axios.post(
-//             `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_accountId}/images/v1`, body,
-//             {
-//                 headers: { "Authorization": `Bearer ${process.env.CF_apiKey}` },
-//             }
-//         );
-//         return res.data;
-
-//     } catch (e) {
-//         console.log("ERROR:" + e);
-//     }
-// }
 const generateImageDimensions = (image_orientation) => {
     let width, height;
     let upscale = 'no';
@@ -212,6 +181,10 @@ const generateImage = async (req, res, next) => {
                     init_image: response.data.meta.init_image,
                     safety_checker_type: response.data.meta.safety_checker_type,
                 },
+                meta: {
+                    userAgent: req.userAgent,
+                    uniqueIdentifier: req.uniqueIdentifier,
+                }
             };
         });
 
@@ -252,6 +225,7 @@ const generateImage = async (req, res, next) => {
             await Ip.findOneAndUpdate({ ip: ip }, { $inc: { current_usage: 1 } });
         }
     } catch (err) {
+        console.log("=============ERROR: Generating Image Error=============");
         console.log(err);
         next(err);
     }
