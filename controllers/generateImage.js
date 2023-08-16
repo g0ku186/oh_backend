@@ -53,21 +53,21 @@ const generateImage = async (req, res, next) => {
 
         const { width, height, upscale } = generateImageDimensions(image_orientation);
         let model_id;
-        // if (style === "classic") {
-        //     model_id = 'hassaku-hentai';
-        // } else if (style === "anime") {
-        //     model_id = 'meina-hentai';
-        // } else {
-        //     model_id = 'grapefruit-hentai-mo';
-        // }
-
         if (style === "classic") {
-            model_id = 'grapefruit-hentai-mo';
+            model_id = 'hassaku-hentai';
         } else if (style === "anime") {
-            model_id = 'grapefruit-hentai-mo';
+            model_id = 'meina-hentai';
         } else {
             model_id = 'grapefruit-hentai-mo';
         }
+
+        // if (style === "classic") {
+        //     model_id = 'grapefruit-hentai-mo';
+        // } else if (style === "anime") {
+        //     model_id = 'grapefruit-hentai-mo';
+        // } else {
+        //     model_id = 'grapefruit-hentai-mo';
+        // }
 
 
         const { email } = req;
