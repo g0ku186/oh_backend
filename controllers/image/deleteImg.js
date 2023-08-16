@@ -1,7 +1,7 @@
 const Generations = require('../../models/generationsModel');
 const deleteFromCF = require('./../helpers/deleteFromCF');
 
-const deleteImg = async (req, res) => {
+const deleteImg = async (req, res, next) => {
     try {
         const { email } = req;
         const imgId = req.body.imgId;
@@ -25,10 +25,9 @@ const deleteImg = async (req, res) => {
             await deleteFromCF(upscale_cf_id);
         }
         return res.status(200).json({ message: 'Image deleted successfully' });
-    } catch (error) {
+    } catch (err) {
         console.log("=============ERROR: Image Delete Error=============");
-        console.log(error);
-        return res.status(500).json({ message: 'Something went wrong. Please try again.' });
+        next(err);
     }
 }
 

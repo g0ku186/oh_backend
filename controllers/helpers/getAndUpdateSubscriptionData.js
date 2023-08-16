@@ -13,9 +13,9 @@ const getDataFromGumRoad = async (license_key) => {
         const response = await axios.post(gumRoadEndPoint, body, { headers: {} });
         return response.data;
 
-    } catch (e) {
+    } catch (err) {
         console.log("=============ERROR: Gumroad License key Error=============");
-        throw e;
+        throw err;
     }
 }
 

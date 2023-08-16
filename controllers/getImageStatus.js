@@ -12,7 +12,7 @@ function getImgUrl(imageId, imagesArray) {
 }
 
 
-const getImageStatus = async (req, res) => {
+const getImageStatus = async (req, res, next) => {
     try {
         const jobId = req.params.jobid;
         const imgId = req.body.imgId;
@@ -54,8 +54,7 @@ const getImageStatus = async (req, res) => {
         res.status(200).send({ status });
     } catch (err) {
         console.log("=============ERROR: Get Image Status Error=============");
-        console.log(err);
-        res.status(500).send("An error occurred while fetching the status.");
+        next(err);
     }
 }
 

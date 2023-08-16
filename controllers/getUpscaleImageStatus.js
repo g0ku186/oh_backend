@@ -3,7 +3,7 @@ const generationsModel = require('../models/generationsModel');
 const uploadToCF = require('./helpers/uploadToCF');
 
 
-const getUpscaleImageStatus = async (req, res) => {
+const getUpscaleImageStatus = async (req, res, next) => {
     try {
         const jobId = req.params.upscale_jobId;
         const imgId = req.body.imgId;
@@ -46,8 +46,7 @@ const getUpscaleImageStatus = async (req, res) => {
         res.status(200).send({ upscale_status: status, upscaled: false, upscale_cf_id: null });
     } catch (err) {
         console.log("=============ERROR: Upscale Image Status Error=============");
-        console.log(err);
-        res.status(500).send("An error occurred while fetching the status.");
+        next(err);
     }
 }
 

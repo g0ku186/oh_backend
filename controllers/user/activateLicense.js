@@ -1,6 +1,7 @@
 const axios = require('axios');
 const User = require('../../models/usersModel');
 const getAndUpdateSubscriptionData = require('../helpers/getAndUpdateSubscriptionData');
+const logger = require('../helpers/logger');
 
 
 
@@ -26,13 +27,14 @@ const activateLicense = async (req, res, next) => {
 
         res.status(200).json({ message: 'License key activated successfully' });
 
-    } catch (e) {
+    } catch (err) {
         console.log("=============ERROR: License Activation Error=============");
-        console.log(e);
-        if (e?.response?.status === 404 && e?.response?.data?.success === false) {
+        if (err?.response?.status === 404 && err?.response?.data?.success === false) {
+            logger.info(`Invalid license key: ${req.email, req.body.license_key}`)
             res.status(401).json({ message: 'Invalid license key' });
             return;
         }
+        next(err);
     }
 }
 

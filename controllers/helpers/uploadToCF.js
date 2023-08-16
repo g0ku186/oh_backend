@@ -14,14 +14,14 @@ const uploadToCF = async (url, retries = 3, delay = 3000) => {
         );
         return res.data;
 
-    } catch (e) {
+    } catch (err) {
         if (retries > 0) {
             console.log('Failed to upload to CF. Retrying...');
             await sleep(delay); // wait for the given delay
             return uploadToCF(url, retries - 1, delay); // recursively retry
         } else {
             console.log("=============ERROR: Cloudflare Upload Error=============");
-            throw e;
+            throw err;
         }
     }
 }

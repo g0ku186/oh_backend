@@ -1,6 +1,6 @@
 const Generations = require('../../models/generationsModel');
 
-const bookmarkImg = async (req, res) => {
+const bookmarkImg = async (req, res, next) => {
 
     try {
         const { email } = req;
@@ -17,8 +17,7 @@ const bookmarkImg = async (req, res) => {
         }
     } catch (err) {
         console.log("=============ERROR: Image Bookmark Error=============");
-        console.log(err);
-        res.status(500).json({ message: "Something went wrong. Please try again." });
+        next(err);
     }
 
 }

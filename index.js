@@ -3,6 +3,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const requestIp = require('request-ip');
+const logger = require('./controllers/helpers/logger');
 const db = require('./db');
 
 const generationsModel = require('./models/generationsModel');
@@ -90,9 +91,10 @@ app.delete('/api/v1/image/delete', isAuthenticated, deleteImg);
 
 
 app.use((err, req, res, next) => {
-    console.log('Came to error handler');
+    console.log('From global error handler');
     console.log(err);
-    res.status(500).json({ message: "An error occurred while generating the image." });
+    logger.error(err);
+    res.status(500).json({ message: "An error occurred. Please try again." });
 });
 
 

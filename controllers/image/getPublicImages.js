@@ -1,6 +1,6 @@
 const Generations = require('../../models/generationsModel');
 
-const getPublicImages = async (req, res) => {
+const getPublicImages = async (req, res, next) => {
     try {
         const page = Number(req.query.page) || 1; // defaults to 1
         const limit = 30;
@@ -23,8 +23,7 @@ const getPublicImages = async (req, res) => {
         });
     } catch (err) {
         console.log("=============ERROR: Get Public Images Error=============");
-        console.error(err);
-        res.status(500).send("Error retrieving public images");
+        next(err);
     }
 }
 

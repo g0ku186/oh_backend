@@ -1,6 +1,6 @@
 const Generations = require('../../models/generationsModel');
 
-const getImages = async (req, res) => {
+const getImages = async (req, res, next) => {
     try {
         const { email } = req;
         const page = Number(req.query.page) || 1; // defaults to 1
@@ -37,8 +37,7 @@ const getImages = async (req, res) => {
         });
     } catch (err) {
         console.log("=============ERROR: Get Images Error=============");
-        console.error(err);
-        res.status(500).send("Error retrieving images");
+        next(err);
     }
 }
 

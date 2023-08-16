@@ -7,6 +7,7 @@ const Ip = require('../models/ipsModel');
 
 //helpers
 const uploadToCF = require('./helpers/uploadToCF');
+const logger = require('./helpers/logger');
 
 const generateImageDimensions = (image_orientation) => {
     let width, height;
@@ -52,12 +53,20 @@ const generateImage = async (req, res, next) => {
 
         const { width, height, upscale } = generateImageDimensions(image_orientation);
         let model_id;
+        // if (style === "classic") {
+        //     model_id = 'hassaku-hentai';
+        // } else if (style === "anime") {
+        //     model_id = 'meina-hentai';
+        // } else {
+        //     model_id = 'grapefruit-hentai-mo';
+        // }
+
         if (style === "classic") {
-            model_id = 'hassaku-hentai';
+            model_id = 'grapefruit-hentai-mo';
         } else if (style === "anime") {
-            model_id = 'meina-hentai';
+            model_id = 'grapefruit-hentai-mo';
         } else {
-            model_id = 'hassaku-hentai';
+            model_id = 'grapefruit-hentai-mo';
         }
 
 
@@ -101,7 +110,8 @@ const generateImage = async (req, res, next) => {
                 }
 
             } catch (err) {
-                console.log(err);
+                console.log("Error with Stable Diffusion API");
+                logger.error('Error with stable diffusion API');
                 throw err;
             }
         }
@@ -129,7 +139,15 @@ const generateImage = async (req, res, next) => {
             }
         }
 
-        if (response.data.status === 'failed') return res.status(500).json({ message: 'High demand. Please try in a bit' });
+        if (response.data.status === 'failed') {
+            logger.error(`SD API: ${response.data.status} - ${response.data.message}`);
+            return res.status(500).json({ message: 'High demand. Please try in a bit' });
+        }
+        if (response.data.status === 'error') {
+            logger.error(`SD API: ${response.data.status} - ${response.data.message}`);
+            console.log(response.data);
+            return res.status(500).json({ message: 'Something went wrong. Please try again later' });
+        }
 
         // console.log(response.data);
         const isImgGenerated = response.data.status === 'success' ? true : false;
@@ -226,7 +244,6 @@ const generateImage = async (req, res, next) => {
         }
     } catch (err) {
         console.log("=============ERROR: Generating Image Error=============");
-        console.log(err);
         next(err);
     }
 };

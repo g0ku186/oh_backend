@@ -1,4 +1,5 @@
 const auth = require("../../firebase");
+const logger = require("../helpers/logger");
 
 const isAuthenticated = async (req, res, next) => {
     try {
@@ -12,8 +13,9 @@ const isAuthenticated = async (req, res, next) => {
         req.profile_pic = decodedToken.picture;
         req.email_verified = decodedToken.email_verified;
         next();
-    } catch (error) {
+    } catch (err) {
         console.log("=============ERROR: Auth middleware Error=============");
+        logger.error(err);
         res.status(401).json({ message: "Unauthenticated. Please refresh the page and login." });
     }
 };

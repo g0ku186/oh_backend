@@ -10,10 +10,9 @@ const getUserDetails = async (req, res, next) => {
             return res.status(404).json({ message: "User not found" });
         }
     }
-    catch (error) {
+    catch (err) {
         console.log("=============ERROR: Get User Details Error=============");
-        console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
+        next(err);
     }
 };
 
