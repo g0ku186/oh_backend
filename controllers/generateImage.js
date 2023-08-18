@@ -95,7 +95,9 @@ const generateImage = async (req, res, next) => {
             lora_model: null,
             lora_strength: null,
             embeddings_model: null,
-            clip_skip: 2
+            clip_skip: 2,
+            self_attention: 'no',
+
         };
 
         let response;
@@ -111,7 +113,7 @@ const generateImage = async (req, res, next) => {
 
             } catch (err) {
                 console.log("Error with Stable Diffusion API");
-                logger.error('Error with stable diffusion API');
+                logger.error(`Error with stable diffusion API - ${JSON.stringify(err.response.data)}`);
                 throw err;
             }
         }
@@ -140,11 +142,12 @@ const generateImage = async (req, res, next) => {
         }
 
         if (response.data.status === 'failed') {
-            logger.error(`SD API: ${response.data.status} - ${response.data.message}`);
-            return res.status(500).json({ message: 'High demand. Please try in a bit' });
+            logger.error(`SD API: ${response.data.status} - ${response.data.message} - ${JSON.stringify(response.data)}`);
+            return res.status(500).json({ message: 'High demand. Please try in a bit or upgrade your plan.' });
         }
         if (response.data.status === 'error') {
-            logger.error(`SD API: ${response.data.status} - ${response.data.message}`);
+            console.log(response.data);
+            logger.error(`SD API: ${response.data.status} - ${response.data.message} - ${JSON.stringify(response.data)}`);
             console.log(response.data);
             return res.status(500).json({ message: 'Something went wrong. Please try again later' });
         }

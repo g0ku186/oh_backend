@@ -45,21 +45,21 @@ app.get('/api', isAuthenticated, (req, res) => {
 });
 
 
-app.get('/generations/:id', async function (req, res) {
-    try {
-        let id = req.params.id;
-        let remoteUrl = `https://cdn.stablediffusionapi.com/generations/${id}`;
-        const response = await axios({
-            method: 'get',
-            url: remoteUrl,
-            responseType: 'stream'
-        });
-        response.data.pipe(res);
-    } catch (error) {
-        console.log('Came to catch block of reverse proxy');
-        res.status(404).send("No image yet yo.");
-    }
-});
+// app.get('/generations/:id', async function (req, res) {
+//     try {
+//         let id = req.params.id;
+//         let remoteUrl = `https://cdn.stablediffusionapi.com/generations/${id}`;
+//         const response = await axios({
+//             method: 'get',
+//             url: remoteUrl,
+//             responseType: 'stream'
+//         });
+//         response.data.pipe(res);
+//     } catch (error) {
+//         console.log('Came to catch block of reverse proxy');
+//         res.status(404).send("No image yet yo.");
+//     }
+// });
 
 
 //generate routes
