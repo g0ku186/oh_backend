@@ -149,7 +149,7 @@ const generateImage = async (req, res, next) => {
             console.log(response.data);
             logger.error(`SD API: ${response.data.status} - ${response.data.message} - ${JSON.stringify(response.data)}`);
             console.log(response.data);
-            return res.status(500).json({ message: 'Something went wrong. Please try again later' });
+            return res.status(500).json({ message: 'High demand. Please try in a bit or upgrade your plan.' });
         }
 
         // console.log(response.data);

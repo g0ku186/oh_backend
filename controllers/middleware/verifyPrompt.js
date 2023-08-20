@@ -46,7 +46,7 @@ const verifyPrompt = async (req, res, next) => {
             next(err);
         }
         return res.status(400).json({
-            message: 'Policy violation detected. You are not allowed to generate illegal content.',
+            message: 'Prompt rejected. Please do not use age or any illegal words. We do not encourage illegal activities.',
         });
     }
     next();
