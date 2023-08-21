@@ -27,11 +27,23 @@ const generateSubscriptionStatus = (gumRoadResponse) => {
     let limit = 1;
     let plan = "free";
     if (subscriptionDetails.recurrence === "yearly") {
-        limit = 1000;
         plan = "yearly";
+        if (subscriptionDetails.price === 5000) {
+            limit = 1000;
+        } else {
+            //give 50 images to every 100 cents
+            limit = Math.floor(subscriptionDetails.price / 1000) * 50;
+        }
+
     } else {
-        limit = 1000;
         plan = "monthly";
+        if (subscriptionDetails.price === 999) {
+            limit = 1000;
+        }
+        else {
+            limit = Math.floor(subscriptionDetails.price / 100) * 50;
+        }
+
     }
     return { subscriptionDetails, subscriptionEnded, subscriptionEndedAt, limit, plan, canGenerate };
 

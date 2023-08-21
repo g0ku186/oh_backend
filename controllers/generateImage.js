@@ -60,8 +60,9 @@ const generateImage = async (req, res, next) => {
         } else if (style === "sd") {
             model_id = 'sd';
         } else if (style === "rv") {
+            model_id = 'realistic-vision-v51';
             // model_id = 'realistic-vision-v13';
-            model_id = 'sdxl';
+            // model_id = 'sdxl';
         } else if (style === "wifu") {
             model_id = 'wifu-diffusion';
         } else if (style === "f222") {
@@ -78,9 +79,9 @@ const generateImage = async (req, res, next) => {
             negative_prompt: defaultNegativePrompt + ' ' + negative_prompt,
             width: width,
             height: height,
-            samples: '1',
+            samples: '2',
             safety_checker: 'no',
-            num_inference_steps: '20',
+            num_inference_steps: '31',
             enhance_prompt: 'no',
             scheduler: 'EulerAncestralDiscreteScheduler',
             seed: seed,
