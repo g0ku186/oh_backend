@@ -21,11 +21,14 @@ const generateSubscriptionStatus = (gumRoadResponse) => {
 
     //if subscription ended, and the ending date is less than date.now, then set canGenerate as false
     let canGenerate = true;
+    let limit = 3;
+    let plan = "free";
+
     if (subscriptionEndedAt && new Date(subscriptionEndedAt) < Date.now()) {
         canGenerate = false;
+        return { subscriptionDetails, subscriptionEnded, subscriptionEndedAt, limit, plan, canGenerate };
     }
-    let limit = 1;
-    let plan = "free";
+
     if (subscriptionDetails.recurrence === "yearly") {
         plan = "yearly";
         if (subscriptionDetails.price === 5000) {

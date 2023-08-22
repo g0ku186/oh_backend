@@ -14,6 +14,10 @@ const usersSchema = new Schema(
             type: String,
             default: "free",
         },
+        role: {
+            type: String,
+            default: "user",
+        },
         limit: {
             type: Number,
             default: 3,
@@ -28,6 +32,7 @@ const usersSchema = new Schema(
         },
         subscriptionEnded: Boolean,
         subscriptionEndedAt: Date,
+        limitLastUpdatedAt: Date,
         subscriptionDetailsUpdatedAt: Date,
         canGenerate: {
             type: Boolean,
