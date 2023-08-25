@@ -13,7 +13,7 @@ const getImages = async (req, res, next) => {
             skip = 0;
         }
 
-        const query = { email: email };
+        const query = { email: email, isDeleted: false };
 
         // If bookmark query parameter is provided, include it in the MongoDB query
         if (bookmark) {

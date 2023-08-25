@@ -17,7 +17,7 @@ const deleteImg = async (req, res, next) => {
             upscale_cf_id = image.upscale_cf_id;
         }
 
-        await Generations.deleteOne({ imgId, email });
+        await Generations.updateOne({ imgId, email }, { isDeleted: true });
         if (cf_id) {
             const deleteFromCFResponse = await deleteFromCF(cf_id);
         }

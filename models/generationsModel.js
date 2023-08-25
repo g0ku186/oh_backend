@@ -21,6 +21,10 @@ const generationsSchema = new Schema(
             type: Boolean,
             default: false,
         },
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
         parameters: Schema.Types.Mixed,
         cf_uploaded: Boolean,
         cf_id: String,
