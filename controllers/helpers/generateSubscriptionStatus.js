@@ -31,8 +31,8 @@ const generateSubscriptionStatus = (gumRoadResponse) => {
 
     if (subscriptionDetails.recurrence === "yearly") {
         plan = "yearly";
-        if (subscriptionDetails.price === 5000) {
-            limit = 1000;
+        if (subscriptionDetails.price === 5999) {
+            limit = 25000;
         } else {
             //give 50 images to every 100 cents
             limit = Math.floor(subscriptionDetails.price / 1000) * 50;

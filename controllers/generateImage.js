@@ -37,6 +37,9 @@ const generateImageDimensions = (image_orientation) => {
 const defaultNegativePrompt = 'child, childlike, Below 20, kids,';
 const defaultPositivePrompt = 'adult, Above 20, mature, (masterpiece), (best quality)';
 
+const text2ImgEndPoint = "https://stablediffusionapi.com/api/v4/dreambooth";
+const img2ImgEndPoint = "https://stablediffusionapi.com/api/v4/dreambooth/img2img";
+
 const generateImage = async (req, res, next) => {
     try {
         const {
@@ -53,6 +56,7 @@ const generateImage = async (req, res, next) => {
 
         const { width, height, upscale } = generateImageDimensions(image_orientation);
         let model_id;
+        //SDAPI specific
         if (style === "classic") {
             model_id = 'hassaku-hentai';
         } else if (style === "anime") {
@@ -72,6 +76,7 @@ const generateImage = async (req, res, next) => {
 
         const { email } = req;
 
+        //SDAPI Specific
         const data = {
             key: process.env.sd_apiKey,
             model_id: model_id,
@@ -106,9 +111,9 @@ const generateImage = async (req, res, next) => {
             try {
                 if (init_image) {
                     data.init_image = init_image;
-                    return await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
+                    return await axios.post(img2ImgEndPoint, data);
                 } else {
-                    return await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
+                    return await axios.post(text2ImgEndPoint, data);
                 }
 
             } catch (err) {
@@ -127,6 +132,7 @@ const generateImage = async (req, res, next) => {
         while (retryCount < maxRetries) {
             try {
                 response = await makeRequest();
+                //SDAPI Specific
                 if (response.data.status === 'failed') {
                     console.log(response.data.error_log.server_id);
                     console.log(response.data.error_log.response.message);
