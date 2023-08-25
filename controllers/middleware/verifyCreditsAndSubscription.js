@@ -21,6 +21,7 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
                 return res.status(403).json({ message: "Today's free limit exceeded. Please check back tomorrow for additional credits or support us by subscribing to one of our plans." });
             }
         } else {
+            //Check if the data is stale
             if (!user.subscriptionDetailsUpdatedAt || (user.subscriptionDetailsUpdatedAt && (new Date() - user.subscriptionDetailsUpdatedAt) > 86400000)) {
                 const updatedUser = await getAndUpdateSubscriptionData(user.email, user.license_key);
                 if (!updatedUser.canGenerate) {
@@ -33,6 +34,7 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
                     }
                 }
             } else {
+                //not stale data.
                 if (!user.canGenerate) {
                     return res.status(403).json({ message: "Your subscription ended. If you have subscribed again, please validate your license key in profile page." });
                 } else {

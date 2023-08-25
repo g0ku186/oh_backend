@@ -25,6 +25,11 @@ const getSubscriptionPeriodStart = (subscriptionDate, plan) => {
 };
 
 
+
+//get user details is called whenever the OAuthStateChange event is triggered on the frontend by firebase.
+// If the user is on free plan, we give 3 credits per day with a max of 30 credits
+// if the user has montly / yearly plan, we refresh his current_usage based on the subscription date
+
 const getUserDetails = async (req, res, next) => {
     try {
         const userObj = await User.findOne({ email: req.email });

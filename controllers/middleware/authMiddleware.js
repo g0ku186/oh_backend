@@ -8,6 +8,8 @@ const isAuthenticated = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthenticated" });
         }
         const decodedToken = await auth.verifyIdToken(idToken);
+
+        //append all of these to request object so that we can use it in the controllers
         req.email = decodedToken.email;
         req.name = decodedToken.name;
         req.profile_pic = decodedToken.picture;
