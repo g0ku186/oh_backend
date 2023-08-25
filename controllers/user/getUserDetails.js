@@ -1,4 +1,29 @@
 const User = require('../../models/usersModel');
+const Generations = require('../../models/generationsModel');
+
+
+// Helper function to calculate the start of the current subscription period
+const getSubscriptionPeriodStart = (subscriptionDate, plan) => {
+    // Use UTC methods for all date manipulations
+    const now = new Date(Date.now());
+    const start = new Date(Date.UTC(subscriptionDate.getUTCFullYear(), subscriptionDate.getUTCMonth(), subscriptionDate.getUTCDate()));
+
+    if (plan === 'monthly') {
+        while (start <= now) {
+            start.setUTCMonth(start.getUTCMonth() + 1);
+        }
+        start.setUTCMonth(start.getUTCMonth() - 1);
+    } else { // yearly
+        while (start <= now) {
+            start.setUTCFullYear(start.getUTCFullYear() + 1);
+        }
+        start.setUTCFullYear(start.getUTCFullYear() - 1);
+    }
+
+    start.setUTCHours(0, 0, 0, 0); // Reset time to midnight
+    return start;
+};
+
 
 const getUserDetails = async (req, res, next) => {
     try {
@@ -15,6 +40,18 @@ const getUserDetails = async (req, res, next) => {
                     userObj.limitLastUpdatedAt = currentDate;
                     await userObj.save(); // Save the updated limit and date
                 }
+            }
+            if (userObj.plan === 'monthly' || userObj.plan === 'yearly') {
+                const subscriptionDate = userObj.subscriptionDetails.sale_timestamp;
+                const currentPeriodStart = getSubscriptionPeriodStart(subscriptionDate, userObj.plan);
+                const imageCount = await Generations.countDocuments({
+                    email: req.email,
+                    createdAt: { $gte: currentPeriodStart },
+                    status: 'success',
+                });
+                userObj.limitRenewedAt = currentPeriodStart;
+                userObj.current_usage = imageCount;
+                await userObj.save();
             }
 
             const { email, name, plan, limit, current_usage, license_key } = userObj;

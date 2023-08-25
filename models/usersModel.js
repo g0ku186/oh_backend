@@ -32,6 +32,7 @@ const usersSchema = new Schema(
         },
         subscriptionEnded: Boolean,
         subscriptionEndedAt: Date,
+        limitRenewedAt: Date,
         limitLastUpdatedAt: Date,
         subscriptionDetailsUpdatedAt: Date,
         canGenerate: {
