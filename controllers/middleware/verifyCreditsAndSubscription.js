@@ -14,11 +14,12 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
+        req.user = user;
         if (user.plan === "free") {
             if (user.current_usage < user.limit) {
                 next();
             } else {
-                return res.status(403).json({ message: "Today's free limit exceeded. Please check back tomorrow for additional credits or support us by subscribing to one of our plans." });
+                return res.status(403).json({ status: "limit_exceeded", message: "Today's free limit exceeded. Please check back tomorrow for additional credits or support us by subscribing to one of our plans." });
             }
         } else {
             //Check if the data is stale
