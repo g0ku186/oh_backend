@@ -239,6 +239,7 @@ const generateImage = async (req, res, next) => {
                     seed: generation.parameters.seed,
                     guidance_scale: generation.parameters.guidance_scale,
                     style: generation.parameters.style,
+                    blurImage: req.blurImage,
                 }
             };
         });
