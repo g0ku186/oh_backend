@@ -2,7 +2,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-const uploadToCF = async (url, retries = 3, delay = 3000) => {
+const uploadToCF = async (url, retries = 3, delay = 5000) => {
     try {
         const body = new FormData();
         body.append("url", url);

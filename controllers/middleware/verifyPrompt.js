@@ -18,7 +18,7 @@ const banishedWords = ['child', 'childlike', 'kids', 'kid', 'infant', 'Below 20'
     'five y', 'six y', 'seven y', 'eight y', 'nine y', 'ten y', 'eleven y', 'twelve y', 'thirteen y', 'fourteen y', 'fifteen y', 'sixteen y', 'seventeen y',
     'five yo', 'six yo', 'seven yo', 'eight yo', 'nine yo', 'ten yo', 'eleven yo', 'twelve yo', 'thirteen yo', 'fourteen yo', 'fifteen yo', 'sixteen yo', 'seventeen yo',
     'five yrs', 'six yrs', 'seven yrs', 'eight yrs', 'nine yrs', 'ten yrs', 'eleven yrs', 'twelve yrs', 'thirteen yrs', 'fourteen yrs', 'fifteen yrs', 'sixteen yrs', 'seventeen yrs',
-    'under age', 'minor', 'underage'
+    'under age', 'minor', 'underage', 'loli', 'lolita', 'young girl', 'young teen', 'little girl'
 ];
 
 
