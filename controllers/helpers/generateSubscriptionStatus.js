@@ -21,15 +21,18 @@ const generateSubscriptionStatus = (gumRoadResponse) => {
 
     //if subscription ended, and the ending date is less than date.now, then set canGenerate as false
     let canGenerate = true;
+    let limit = 3;
+    let plan = "free";
+
     if (subscriptionEndedAt && new Date(subscriptionEndedAt) < Date.now()) {
         canGenerate = false;
+        return { subscriptionDetails, subscriptionEnded, subscriptionEndedAt, limit, plan, canGenerate };
     }
-    let limit = 1;
-    let plan = "free";
+
     if (subscriptionDetails.recurrence === "yearly") {
         plan = "yearly";
-        if (subscriptionDetails.price === 5000) {
-            limit = 1000;
+        if (subscriptionDetails.price === 5999) {
+            limit = 25000;
         } else {
             //give 50 images to every 100 cents
             limit = Math.floor(subscriptionDetails.price / 1000) * 50;

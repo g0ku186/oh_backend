@@ -3,6 +3,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const requestIp = require('request-ip');
+const logger = require('./controllers/helpers/logger');
 const db = require('./db');
 
 const generationsModel = require('./models/generationsModel');
@@ -44,21 +45,21 @@ app.get('/api', isAuthenticated, (req, res) => {
 });
 
 
-app.get('/generations/:id', async function (req, res) {
-    try {
-        let id = req.params.id;
-        let remoteUrl = `https://cdn.stablediffusionapi.com/generations/${id}`;
-        const response = await axios({
-            method: 'get',
-            url: remoteUrl,
-            responseType: 'stream'
-        });
-        response.data.pipe(res);
-    } catch (error) {
-        console.log('Came to catch block of reverse proxy');
-        res.status(404).send("No image yet yo.");
-    }
-});
+// app.get('/generations/:id', async function (req, res) {
+//     try {
+//         let id = req.params.id;
+//         let remoteUrl = `https://cdn.stablediffusionapi.com/generations/${id}`;
+//         const response = await axios({
+//             method: 'get',
+//             url: remoteUrl,
+//             responseType: 'stream'
+//         });
+//         response.data.pipe(res);
+//     } catch (error) {
+//         console.log('Came to catch block of reverse proxy');
+//         res.status(404).send("No image yet yo.");
+//     }
+// });
 
 
 //generate routes
@@ -90,9 +91,10 @@ app.delete('/api/v1/image/delete', isAuthenticated, deleteImg);
 
 
 app.use((err, req, res, next) => {
-    console.log('Came to error handler');
+    console.log('From global error handler');
     console.log(err);
-    res.status(500).json({ message: "An error occurred while generating the image." });
+    logger.error(err);
+    res.status(500).json({ message: "An error occurred. Please try again." });
 });
 
 

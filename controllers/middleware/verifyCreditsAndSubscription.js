@@ -14,17 +14,23 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        if (!user.license_key) {
-            if (user.current_usage < user.limit) {
+        req.user = user;
+        req.blurImage = false;
+        if (user.plan === "free") {
+            if (user.current_usage <= user.limit) {
+                if (user.current_usage === user.limit) {
+                    req.blurImage = true;
+                }
                 next();
             } else {
-                return res.status(403).json({ message: "Free limit exceeded. Please subscribe to one of our plans." });
+                return res.status(403).json({ status: "limit_exceeded", message: "Today's free limit exceeded. Please check back tomorrow for additional credits or support us by subscribing to one of our plans." });
             }
         } else {
+            //Check if the data is stale
             if (!user.subscriptionDetailsUpdatedAt || (user.subscriptionDetailsUpdatedAt && (new Date() - user.subscriptionDetailsUpdatedAt) > 86400000)) {
                 const updatedUser = await getAndUpdateSubscriptionData(user.email, user.license_key);
                 if (!updatedUser.canGenerate) {
-                    return res.status(403).json({ message: "Your subscription ended." });
+                    return res.status(403).json({ message: "Your subscription ended. Downgrading to free plan." });
                 } else {
                     if (updatedUser.current_usage < updatedUser.limit) {
                         next();
@@ -33,21 +39,21 @@ const verifyCreditsAndSubscription = async (req, res, next) => {
                     }
                 }
             } else {
+                //not stale data.
                 if (!user.canGenerate) {
                     return res.status(403).json({ message: "Your subscription ended. If you have subscribed again, please validate your license key in profile page." });
                 } else {
                     if (user.current_usage < user.limit) {
                         next();
                     } else {
-                        return res.status(403).json({ message: "Limit exceeded" });
+                        return res.status(403).json({ message: "Limit exceeded. Please upgrade your plan or reach out to us for additional image credits." });
                     }
                 }
             }
         }
-    } catch (error) {
+    } catch (err) {
         console.log("=============ERROR: Verifying credits error =============");
-        console.log(error);
-        return res.status(500).json({ message: "Something went wrong. Please reach out to support" });
+        next(err)
     }
 };
 

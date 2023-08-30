@@ -1,6 +1,6 @@
 const User = require('../../models/usersModel');
 
-const createOrUpdateUser = async (req, res) => {
+const createOrUpdateUser = async (req, res, next) => {
 
     try {
         const { email, name, profile_pic, email_verified } = req;
@@ -26,10 +26,9 @@ const createOrUpdateUser = async (req, res) => {
             }
         });
         return res.status(200).json({ message: 'Success' });
-    } catch (error) {
+    } catch (err) {
         console.log("=============ERROR: Create or Update user Error=============");
-        console.log(error);
-        return res.status(500).json({ message: 'Internal server error' });
+        next(err);
     }
 }
 module.exports = createOrUpdateUser;

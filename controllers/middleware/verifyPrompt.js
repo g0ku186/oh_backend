@@ -18,7 +18,7 @@ const banishedWords = ['child', 'childlike', 'kids', 'kid', 'infant', 'Below 20'
     'five y', 'six y', 'seven y', 'eight y', 'nine y', 'ten y', 'eleven y', 'twelve y', 'thirteen y', 'fourteen y', 'fifteen y', 'sixteen y', 'seventeen y',
     'five yo', 'six yo', 'seven yo', 'eight yo', 'nine yo', 'ten yo', 'eleven yo', 'twelve yo', 'thirteen yo', 'fourteen yo', 'fifteen yo', 'sixteen yo', 'seventeen yo',
     'five yrs', 'six yrs', 'seven yrs', 'eight yrs', 'nine yrs', 'ten yrs', 'eleven yrs', 'twelve yrs', 'thirteen yrs', 'fourteen yrs', 'fifteen yrs', 'sixteen yrs', 'seventeen yrs',
-    'under age', 'minor', 'underage'
+    'under age', 'minor', 'underage', 'loli', 'lolita', 'young girl', 'young teen', 'little girl'
 ];
 
 
@@ -46,7 +46,7 @@ const verifyPrompt = async (req, res, next) => {
             next(err);
         }
         return res.status(400).json({
-            message: 'Policy violation detected. You are not allowed to generate illegal content.',
+            message: 'Prompt rejected. Please do not use age or any illegal words. We do not encourage illegal activities.',
         });
     }
     next();

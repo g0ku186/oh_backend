@@ -7,7 +7,7 @@ const Ip = require('../models/ipsModel');
 
 //helpers
 const uploadToCF = require('./helpers/uploadToCF');
-const { model } = require('mongoose');
+const logger = require('./helpers/logger');
 
 const generateImageDimensions = (image_orientation) => {
     let width, height;
@@ -37,6 +37,9 @@ const generateImageDimensions = (image_orientation) => {
 const defaultNegativePrompt = 'child, childlike, Below 20, kids,';
 const defaultPositivePrompt = 'adult, Above 20, mature, (masterpiece), (best quality)';
 
+const text2ImgEndPoint = "https://stablediffusionapi.com/api/v4/dreambooth";
+const img2ImgEndPoint = "https://stablediffusionapi.com/api/v4/dreambooth/img2img";
+
 const generateImage = async (req, res, next) => {
     try {
         const {
@@ -53,6 +56,7 @@ const generateImage = async (req, res, next) => {
 
         const { width, height, upscale } = generateImageDimensions(image_orientation);
         let model_id;
+        //SDAPI specific
         if (style === "classic") {
             model_id = 'hassaku-hentai';
         } else if (style === "anime") {
@@ -68,11 +72,21 @@ const generateImage = async (req, res, next) => {
         } else if (style === "f222") {
             model_id = 'f222-diffusion';
         } else {
-            model_id = 'hassaku-hentai';
+            model_id = 'grapefruit-hentai-mo';
         }
-        console.log(model_id);
+
+        // if (style === "classic") {
+        //     model_id = 'grapefruit-hentai-mo';
+        // } else if (style === "anime") {
+        //     model_id = 'grapefruit-hentai-mo';
+        // } else {
+        //     model_id = 'grapefruit-hentai-mo';
+        // }
+
+
         const { email } = req;
 
+        //SDAPI Specific
         const data = {
             key: process.env.sd_apiKey,
             prompt: instructions + ' ' + defaultPositivePrompt,
@@ -95,7 +109,9 @@ const generateImage = async (req, res, next) => {
             lora_model: null,
             lora_strength: null,
             embeddings_model: null,
-            clip_skip: 2
+            clip_skip: 2,
+            self_attention: 'no',
+
         };
 
         if (model_id !== 'sd') {
@@ -110,21 +126,13 @@ const generateImage = async (req, res, next) => {
             try {
                 if (init_image) {
                     data.init_image = init_image;
-                    if (model_id === 'sd') {
-                        console.log('SD Img 2 Img')
-                        return await axios.post('https://stablediffusionapi.com/api/v3/img2img', data);
-                    } else {
-                        return await axios.post('https://stablediffusionapi.com/api/v4/dreambooth/img2img', data);
-                    }
+                    return await axios.post(img2ImgEndPoint, data);
                 } else {
-                    if (model_id === 'sd') {
-                        console.log('SD Text 2 Img')
-                        return await axios.post('https://stablediffusionapi.com/api/v3/text2img', data);
-                    } else {
-                        return await axios.post('https://stablediffusionapi.com/api/v4/dreambooth', data);
-                    }
+                    return await axios.post(text2ImgEndPoint, data);
                 }
             } catch (err) {
+                console.log("Error with Stable Diffusion API");
+                logger.error(`Error with stable diffusion API - ${JSON.stringify(err.response.data)}`);
                 throw err;
             }
         };
@@ -135,6 +143,7 @@ const generateImage = async (req, res, next) => {
         while (attempts < maxAttempts) {
             try {
                 response = await makeRequest();
+                //SDAPI Specific
                 if (response.data.status === 'failed') {
                     attempts++;
                     console.log('Attempt ' + attempts + ' failed');
@@ -148,7 +157,16 @@ const generateImage = async (req, res, next) => {
         }
         console.log(response.data);
 
-        if (response.data.status === 'failed') return res.status(500).json({ message: 'High demand. Please try in a bit' });
+        if (response.data.status === 'failed') {
+            logger.error(`SD API: ${response.data.status} - ${response.data.message} - ${JSON.stringify(response.data)}`);
+            return res.status(500).json({ message: 'High demand. Please try in a bit or upgrade your plan.' });
+        }
+        if (response.data.status === 'error') {
+            console.log(response.data);
+            logger.error(`SD API: ${response.data.status} - ${response.data.message} - ${JSON.stringify(response.data)}`);
+            console.log(response.data);
+            return res.status(500).json({ message: 'High demand. Please try in a bit or upgrade your plan.' });
+        }
 
         // console.log(response.data);
         const isImgGenerated = response.data.status === 'success' ? true : false;
@@ -231,6 +249,7 @@ const generateImage = async (req, res, next) => {
                     seed: generation.parameters.seed,
                     guidance_scale: generation.parameters.guidance_scale,
                     style: generation.parameters.style,
+                    blurImage: req.blurImage,
                 }
             };
         });
@@ -245,7 +264,6 @@ const generateImage = async (req, res, next) => {
         }
     } catch (err) {
         console.log("=============ERROR: Generating Image Error=============");
-        console.log(err);
         next(err);
     }
 };

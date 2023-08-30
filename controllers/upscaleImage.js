@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Generation = require('../models/generationsModel');
 const uploadToCF = require('./helpers/uploadToCF');
+const logger = require('./helpers/logger');
 
 const upscaleImage = async (req, res, next) => {
     try {
@@ -44,7 +45,12 @@ const upscaleImage = async (req, res, next) => {
         }
 
 
-        // console.log(response.data);
+        if (response.data.status === 'failed' || response.data.status === 'error') {
+            console.log(response.data);
+            logger.error(`Upscale Image: ${JSON.stringify(response.data)}`);
+            return res.status(500).json({ message: "High load on our servers. Please try later." });
+        }
+
         existingRecord.upscale_jobId = response.data.id;
         existingRecord.upscaled = response.data.status === 'success' ? true : false;
         existingRecord.upscale_status = existingRecord.upscaled ? 'success' : 'processing';
@@ -78,7 +84,6 @@ const upscaleImage = async (req, res, next) => {
         res.send(finalData);
     } catch (err) {
         console.log("=============ERROR: Upscale Image Error=============");
-        console.log(err.response.status);
         next(err);
     }
 };
