@@ -143,7 +143,7 @@ const generateImage = async (req, res, next) => {
         while (attempts < maxAttempts) {
             try {
                 response = await makeRequest();
-                //SDAPI Specific
+                // 
                 if (response.data.status === 'failed') {
                     attempts++;
                     console.log('Attempt ' + attempts + ' failed');

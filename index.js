@@ -12,6 +12,7 @@ const generationsModel = require('./models/generationsModel');
 
 //generate & upscale Controllers
 const generateImage = require('./controllers/generateImage');
+const generateImage2 = require('./controllers/generateImage2');
 const upscaleImage = require('./controllers/upscaleImage');
 const getImageStatus = require('./controllers/getImageStatus');
 const getUpscaleImageStatus = require('./controllers/getUpscaleImageStatus');
@@ -67,7 +68,7 @@ app.post('/api/v1/status/:jobid', isAuthenticated, getImageStatus);
 
 app.post('/api/v1/upscaleStatus/:jobid', isAuthenticated, getUpscaleImageStatus);
 
-app.post('/api/v1/generateImage', uaMiddleware, isAuthenticated, verifyPrompt, verifyCreditsAndSubscription, generateImage);
+app.post('/api/v1/generateImage', uaMiddleware, isAuthenticated, verifyPrompt, verifyCreditsAndSubscription, generateImage2);
 
 app.post('/api/v1/upscaleImage', isAuthenticated, upscaleImage);
 
@@ -92,7 +93,7 @@ app.delete('/api/v1/image/delete', isAuthenticated, deleteImg);
 
 app.use((err, req, res, next) => {
     console.log('From global error handler');
-    console.log(err);
+    console.log(err.response.data);
     logger.error(err);
     res.status(500).json({ message: "An error occurred. Please try again." });
 });
