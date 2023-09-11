@@ -20,7 +20,7 @@ const usersSchema = new Schema(
         },
         limit: {
             type: Number,
-            default: 3,
+            default: 10,
         },
         current_usage: {
             type: Number,

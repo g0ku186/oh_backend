@@ -40,7 +40,7 @@ const getUserDetails = async (req, res, next) => {
                 const daysSinceLastUpdate = Math.floor((currentDate - lastUpdatedDate) / (1000 * 60 * 60 * 24));
 
                 if (daysSinceLastUpdate >= 1) {
-                    const additionalCredits = Math.min(daysSinceLastUpdate * 3, 30);
+                    const additionalCredits = Math.min(daysSinceLastUpdate * 10, 30);
                     userObj.limit = userObj.limit + additionalCredits; // Ensure the limit doesn't exceed 30
                     userObj.limitLastUpdatedAt = currentDate;
                     await userObj.save(); // Save the updated limit and date
